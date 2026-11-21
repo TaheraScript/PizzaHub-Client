@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { createMenu } from "@/lib/actions/menu-items"
 
 const CATEGORIES = [
   "Classic Pizzas",
@@ -37,9 +38,9 @@ export default function AddMenuItemPage() {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
     setImage(event.target.files?.[0] ?? null)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
+   
     // Collects the form data only; saving to the server + ImgBB upload come later.
     const menuItem = {
       itemName: form.itemName.trim(),
@@ -50,8 +51,8 @@ export default function AddMenuItemPage() {
       image,
       status: "pending" as const,
     }
-
-    console.log("New menu item:", menuItem)
+     const result = await createMenu(menuItem)
+    console.log("New menu item:", result)
     toast.success("Menu item added and sent for review.")
 
     setForm(EMPTY_FORM)
