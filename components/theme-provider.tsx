@@ -13,6 +13,10 @@ function ThemeProvider({
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      // React 19 / Next 16 rejects the inline FOUC <script> next-themes renders
+      // inside a component. A non-JS type stops that error.
+      // https://github.com/pacocoursey/next-themes/issues/387
+      scriptProps={{ type: "application/json" }}
       {...props}
     >
       <ThemeHotkey />
