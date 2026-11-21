@@ -2,6 +2,7 @@
 
 import Image, { type StaticImageData } from "next/image"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import {
   CheckCircle2,
   Clock,
@@ -9,16 +10,16 @@ import {
   MapPin,
   Pencil,
   Plus,
-  Trash2,
   XCircle,
   type LucideIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 
-import pizza from "@/app/images/hero-pizza.jpg"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { getMenu } from "@/lib/api/menu"
+import { DeleteMenuDialog } from "@/components/DeleteMenuDialog"
 
 type MenuItemStatus = "pending" | "approved" | "rejected" | "inactive"
 
@@ -52,87 +53,31 @@ const STATUS: Record<
   },
 }
 
-// Dummy data for previewing the layout.
-const MENU_ITEMS: MenuItem[] = [
-  {
-    _id: "1",
-    itemName: "Pepperoni Feast",
-    category: "Classic Pizzas",
-    description:
-      "Loaded with double pepperoni, mozzarella and our signature tomato sauce.",
-    price: 12.99,
-    location: "Dhanmondi, Dhaka",
-    image: pizza,
-    status: "approved",
-  },
-  {
-    _id: "2",
-    itemName: "Garden Veggie Delight",
-    category: "Vegetarian Pizzas",
-    description:
-      "Bell peppers, olives, mushrooms, red onion and cherry tomatoes on a thin crust.",
-    price: 10.5,
-    location: "Gulshan, Dhaka",
-    image: pizza,
-    status: "pending",
-  },
-  {
-    _id: "3",
-    itemName: "Meat Lovers Supreme",
-    category: "Meat Lovers",
-    description: "Pepperoni, beef, chicken and smoky sausage over melted cheese.",
-    price: 15.75,
-    location: "Banani, Dhaka",
-    image: pizza,
-    status: "approved",
-  },
-  {
-    _id: "4",
-    itemName: "Truffle Mushroom Gourmet",
-    category: "Specialty / Gourmet Pizzas",
-    description:
-      "Wild mushrooms, truffle oil and parmesan on a hand-rolled base.",
-    price: 18,
-    location: "Uttara, Dhaka",
-    image: pizza,
-    status: "pending",
-  },
-  {
-    _id: "5",
-    itemName: "Garlic Breadsticks",
-    category: "Sides & Appetizers",
-    description:
-      "Freshly baked breadsticks brushed with garlic butter and mixed herbs.",
-    price: 4.25,
-    location: "Dhanmondi, Dhaka",
-    image: pizza,
-    status: "rejected",
-  },
-  {
-    _id: "6",
-    itemName: "Chocolate Lava Cake",
-    category: "Beverages & Desserts",
-    description: "Warm chocolate cake with a molten centre, served in pairs.",
-    price: 5.99,
-    location: "Mirpur, Dhaka",
-    image: pizza,
-    status: "inactive",
-  },
-]
-
-function MenuItemCard({ item }: { item: MenuItem }) {
+function MenuItemCard({
+  item,
+  onDeleted,
+}: {
+  item: MenuItem
+  onDeleted: (id: string) => void
+}) {
   const status = STATUS[item.status]
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="relative aspect-4/3 overflow-hidden">
-        <Image
-          src={item.image}
-          alt={item.itemName}
-          fill
-          sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {typeof item.image === "string" && item.image.length > 0 ? (
+          <Image
+            src={item.image}
+            alt={item.itemName}
+            fill
+            sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center bg-muted text-sm font-medium text-muted-foreground">
+            No image
+          </div>
+        )}
         <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-border backdrop-blur">
           <status.icon className={cn("size-3.5", status.iconClass)} />
           {status.label}
@@ -173,15 +118,7 @@ function MenuItemCard({ item }: { item: MenuItem }) {
             <Pencil />
             Edit
           </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`Delete ${item.itemName}`}
-            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => toast.info("Delete item coming soon")}
-          >
-            <Trash2 />
-          </Button>
+          <DeleteMenuDialog item={item} onDeleted={onDeleted} />
         </div>
       </div>
     </article>
@@ -189,6 +126,22 @@ function MenuItemCard({ item }: { item: MenuItem }) {
 }
 
 export default function VendorMenuItemsPage() {
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
+
+  useEffect(() => {
+    let active = true
+
+    getMenu()
+      .then((data: MenuItem[]) => {
+        if (active) setMenuItems(data)
+      })
+      .catch(() => toast.error("Failed to load menu items"))
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -206,8 +159,16 @@ export default function VendorMenuItemsPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {MENU_ITEMS.map((item) => (
-          <MenuItemCard key={item._id} item={item} />
+        {menuItems.map((item) => (
+          <MenuItemCard
+            key={item._id}
+            item={item}
+            onDeleted={(id) =>
+              setMenuItems((current) =>
+                current.filter((menuItem) => menuItem._id !== id)
+              )
+            }
+          />
         ))}
       </div>
     </div>
