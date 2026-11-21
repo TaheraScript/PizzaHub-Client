@@ -6,14 +6,14 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
-  UtensilsCrossed,
+  Store,
 } from "lucide-react"
 
 import pizza from "@/app/images/hero-pizza.jpg"
 import { Button } from "@/components/ui/button"
 
 const stats = [
-  { value: "500+", label: "Local pizza shops" },
+  { value: "500+", label: "Local pizza vendors" },
   { value: "30 min", label: "Average delivery" },
   { value: "4.9/5", label: "Customer rating" },
 ]
@@ -21,9 +21,9 @@ const stats = [
 const features = [
   { icon: Bike, title: "Fast Delivery", description: "Hot at your door" },
   {
-    icon: UtensilsCrossed,
-    title: "Tasty Menu",
-    description: "Fresh ingredients",
+    icon: Store,
+    title: "Local Vendors",
+    description: "Fresh from nearby kitchens",
   },
   {
     icon: ShieldCheck,
@@ -48,19 +48,19 @@ export function Banner() {
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-amber/40 bg-brand-amber/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-brand-amber sm:text-sm">
               <Sparkles className="size-3.5 sm:size-4" />
-              Fresh from the oven
+              Pizza ordering &amp; delivery platform
             </span>
 
             <h1 className="mt-5 text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl xl:text-7xl">
               Hot &amp; Fresh Pizza
               <span className="mt-1 block bg-gradient-to-r from-brand-amber via-[#ffc247] to-brand-orange bg-clip-text text-transparent">
-                Delivered to Your Door
+                Ordered &amp; Delivered
               </span>
             </h1>
 
             <p className="mt-5 max-w-xl text-base leading-relaxed text-pretty text-hero-foreground/75 sm:text-lg">
-              Discover local pizza shops, explore hand-tossed menus, and get your
-              favourite slice delivered hot in 30 minutes or less.
+              PizzaHub connects customers with local pizza vendors. Browse real
+              menus, order in seconds, and get it delivered hot to your door.
             </p>
 
             <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
@@ -76,13 +76,17 @@ export function Banner() {
                 size="lg"
                 variant="outline"
                 className="h-12 w-full rounded-full border-white/25 bg-white/5 px-7 text-base font-semibold text-hero-foreground hover:bg-white/10 hover:text-hero-foreground sm:w-auto"
-                render={<Link href="#how-it-works" />}
+                render={<Link href="/sign-up" />}
               >
-                How It Works
+                Join as a vendor
               </Button>
             </div>
 
-            <dl className="mt-10 grid w-full max-w-md grid-cols-3 gap-3 border-t border-white/10 pt-6 sm:gap-6">
+            <p className="mt-6 text-xs font-medium tracking-wide text-hero-foreground/60 sm:text-sm">
+              For customers · vendors · admins
+            </p>
+
+            <dl className="mt-8 grid w-full max-w-md grid-cols-3 gap-3 border-t border-white/10 pt-6 sm:gap-6">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center lg:text-left">
                   <dt className="sr-only">{stat.label}</dt>

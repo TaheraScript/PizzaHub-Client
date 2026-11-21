@@ -8,7 +8,15 @@ const db = client.db(process.env.BETTER_AUTH_DB_NAME ?? "pizzahub")
 export const auth = betterAuth({
      emailAndPassword: { 
     enabled: true, 
-  }, 
+  }, user: {
+       additionalFields: {
+          role: {
+              type: ['admin','vendor','customer'],
+              input: true,
+              defaultValue: 'customer'
+            } 
+        }
+    },
     socialProviders: {
         google: { 
             clientId: process.env.GOOGLE_CLIENT_ID as string, 
@@ -18,38 +26,15 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
-
-  user: {
-    additionalFields: {
-      /** vendor | customer | admin — never settable to admin from public sign up */
-      role: {
-        type: "string",
-        required: false,
-        defaultValue: "customer",
-        input: true,
-      },
-      isBlocked: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: false,
-      },
-      /** vendors only */
-      businessName: {
-        type: "string",
-        required: false,
-        input: true,
-      },
-      subscriptionPlan: {
-        type: "string",
-        required: false,
-        defaultValue: "free",
-        input: false,
-      },
-      subscriptionExpiresAt: {
-        type: "date",
-        required: false,
-        input: false,
+  databaseHooks: {
+    user: {
+      create: {
+        // Public sign-up may only create "customer" or "vendor".
+        // A forged "admin" (or any other value) is coerced to "customer".
+        before: async (user) => {
+          const role = user.role === "vendor" ? "vendor" : "customer"
+          return { data: { ...user, role } }
+        },
       },
     },
   },

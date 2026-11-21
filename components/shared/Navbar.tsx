@@ -3,30 +3,12 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
-import {
-  ChevronDown,
-  LayoutDashboard,
-  LogOut,
-  Menu as MenuIcon,
-  Settings,
-  ShieldCheck,
-  ShoppingBag,
-  Store,
-} from "lucide-react"
+import { LogOut, Menu as MenuIcon } from "lucide-react"
 
-import { authClient, useSession } from "@/lib/auth-client"
+import { signOut, useSession } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/components/shared/Logo"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -38,40 +20,25 @@ import {
 
 type Role = "customer" | "vendor" | "admin"
 
+const ROLE_LABEL: Record<Role, string> = {
+  customer: "Customer",
+  vendor: "Vendor",
+  admin: "Admin",
+}
+
 type SessionUser = {
   name?: string | null
   email?: string | null
-  image?: string | null
   role?: string | null
 }
 
-const DASHBOARD_HREF: Record<Role, string> = {
-  customer: "/dashboard/customer",
-  vendor: "/dashboard/vendor",
-  admin: "/dashboard/admin",
-}
-
-/** Role specific shortcut shown in the navbar next to Home / Browse Menu. */
-const ROLE_LINK: Record<Role, { href: string; label: string }> = {
-  customer: { href: "/dashboard/customer/orders", label: "My Orders" },
-  vendor: { href: "/dashboard/vendor/menu-items", label: "My Menu" },
-  admin: { href: "/dashboard/admin/users", label: "Manage Users" },
-}
+const LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/menu", label: "Browse Menu" },
+]
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
-}
-
-function getInitials(name?: string | null) {
-  const initials = (name ?? "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("")
-
-  return initials || "PH"
 }
 
 function navLinkClass(active: boolean) {
@@ -94,20 +61,10 @@ export function Navbar() {
   const isLoggedIn = Boolean(user)
 
   const role: Role =
-    user?.role === "vendor" || user?.role === "admin" || user?.role === "customer"
-      ? user.role
-      : "customer"
-
-  const links = [
-    { href: "/", label: "Home" },
-    { href: "/menu", label: "Browse Menu" },
-    ...(isLoggedIn ? [{ href: ROLE_LINK[role].href, label: ROLE_LINK[role].label }] : []),
-  ]
-
-  const initials = getInitials(user?.name)
+    user?.role === "vendor" || user?.role === "admin" ? user.role : "customer"
 
   const handleSignOut = async () => {
-    await authClient.signOut()
+    await signOut()
     setMobileOpen(false)
     router.push("/")
     router.refresh()
@@ -120,7 +77,7 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label="Main">
-          {links.map((link) => (
+          {LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -135,58 +92,19 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           {isPending ? (
             <div className="flex items-center gap-2" aria-hidden="true">
-              <span className="size-9 animate-pulse rounded-full bg-muted" />
-              <span className="hidden h-8 w-20 animate-pulse rounded-full bg-muted md:block" />
+              <span className="hidden h-8 w-24 animate-pulse rounded-full bg-muted md:block" />
             </div>
           ) : isLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                aria-label="Open profile menu"
-                className="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 outline-none transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 md:pr-2.5"
-              >
-                <Avatar size="lg" className="size-9">
-                  {user?.image ? (
-                    <AvatarImage src={user.image} alt={user.name ?? "User"} />
-                  ) : null}
-                  <AvatarFallback className="bg-primary/20 text-xs font-bold text-foreground">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="hidden max-w-32 truncate text-sm font-semibold md:block">
-                  {user?.name}
-                </span>
-                <ChevronDown className="hidden size-4 text-muted-foreground md:block" />
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-64!">
-                <DropdownMenuLabel className="px-2 py-2">
-                  <span className="block truncate text-sm font-semibold text-foreground">
-                    {user?.name}
-                  </span>
-                  <span className="block truncate text-xs font-normal text-muted-foreground">
-                    {user?.email}
-                  </span>
-                </DropdownMenuLabel>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem render={<Link href={DASHBOARD_HREF[role]} />}>
-                  <LayoutDashboard />
-                  Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem render={<Link href="/profile" />}>
-                  <Settings />
-                  Profile Settings
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
-                  <LogOut />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="hidden items-center gap-2.5 md:flex">
+              <span className="max-w-40 truncate text-sm font-semibold">{user?.name}</span>
+              <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
+                {ROLE_LABEL[role]}
+              </span>
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut />
+                Sign Out
+              </Button>
+            </div>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button variant="ghost" render={<Link href="/sign-in" />}>
@@ -226,7 +144,7 @@ export function Navbar() {
               </SheetHeader>
 
               <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3" aria-label="Mobile">
-                {links.map((link) => (
+                {LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -242,25 +160,6 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-
-                {isLoggedIn && (
-                  <>
-                    <Link
-                      href={DASHBOARD_HREF[role]}
-                      onClick={() => setMobileOpen(false)}
-                      className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/profile"
-                      onClick={() => setMobileOpen(false)}
-                      className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      Profile Settings
-                    </Link>
-                  </>
-                )}
               </nav>
 
               <Separator />
@@ -268,30 +167,19 @@ export function Navbar() {
               <div className="p-4">
                 {isLoggedIn ? (
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar size="lg" className="size-10">
-                        {user?.image ? (
-                          <AvatarImage src={user.image} alt={user.name ?? "User"} />
-                        ) : null}
-                        <AvatarFallback className="bg-primary/20 text-xs font-bold text-foreground">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{user?.name}</p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {user?.email}
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold">{user?.name}</p>
+                      <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
+                        {ROLE_LABEL[role]}
+                      </span>
                     </div>
-
                     <Button
                       variant="outline"
                       className="w-full justify-center text-destructive hover:bg-destructive/10 hover:text-destructive"
                       onClick={handleSignOut}
                     >
                       <LogOut />
-                      Logout
+                      Sign Out
                     </Button>
                   </div>
                 ) : (
@@ -309,7 +197,7 @@ export function Navbar() {
                       render={<Link href="/sign-up" />}
                       onClick={() => setMobileOpen(false)}
                     >
-                      Sign Up
+                     Sign Up
                     </Button>
                   </div>
                 )}

@@ -34,6 +34,7 @@ export default function SignInPage() {
     const { error } = await authClient.signIn.email({
       email: form.email,
       password: form.password,
+      rememberMe: true,
       callbackURL: "/",
     })
 
