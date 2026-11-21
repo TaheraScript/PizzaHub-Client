@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   CreditCard,
   LayoutDashboard,
@@ -13,17 +15,20 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import { useSession } from "@/lib/auth-client"
+import { Logo } from "@/components/shared/Logo"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useSession } from "@/lib/auth-client"
 
 type Role = "customer" | "vendor" | "admin"
 
@@ -32,6 +37,12 @@ type MenuItem = {
   name: string
   url: string
   icon: LucideIcon
+}
+
+const ROLE_LABEL: Record<Role, string> = {
+  customer: "Customer",
+  vendor: "Vendor",
+  admin: "Admin",
 }
 
 const menuItemsByRole: Record<Role, MenuItem[]> = {
@@ -122,27 +133,63 @@ const menuItemsByRole: Record<Role, MenuItem[]> = {
 }
 
 export function DashboardSidebar() {
+  const pathname = usePathname()
   const { data: session } = useSession()
-  const role = session?.user?.role || "customer"
+
+  const role: Role =
+    session?.user?.role === "vendor" || session?.user?.role === "admin"
+      ? session.user.role
+      : "customer"
+
+  const root = `/dashboard/${role}`
+  const items = menuItemsByRole[role]
 
   return (
-    <Sidebar>
-      <SidebarHeader />
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="p-2">
+        <Logo size="sm" />
+      </SidebarHeader>
+
       <SidebarContent>
-        <SidebarGroup />
-        <SidebarMenu>
-          {menuItemsByRole[role].map((item) => (
-            <SidebarMenuItem key={item.id}>
-              <SidebarMenuButton render={<a href={item.url} />}>
-                <item.icon />
-                <span>{item.name}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-        <SidebarGroup />
+        <SidebarGroup>
+          <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => {
+                const active =
+                  item.url === root
+                    ? pathname === item.url
+                    : pathname === item.url ||
+                      pathname.startsWith(`${item.url}/`)
+
+                return (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={active}
+                      tooltip={item.name}
+                      render={<Link href={item.url} />}
+                    >
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+
+      <SidebarFooter className="p-2">
+        <div className="flex items-center gap-2 rounded-lg border border-sidebar-border px-2.5 py-2 text-xs">
+          <span className="truncate font-medium text-sidebar-foreground">
+            {session?.user?.name}
+          </span>
+          <span className="ml-auto shrink-0 rounded-full bg-sidebar-accent px-2 py-0.5 font-semibold text-sidebar-accent-foreground">
+            {ROLE_LABEL[role]}
+          </span>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }

@@ -10,8 +10,8 @@ function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
+      enableSystem={false}
       disableTransitionOnChange
       // React 19 / Next 16 rejects the inline FOUC <script> next-themes renders
       // inside a component. A non-JS type stops that error.

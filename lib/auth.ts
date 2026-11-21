@@ -19,8 +19,8 @@ export const auth = betterAuth({
     },
     socialProviders: {
         google: { 
-            clientId: process.env.GOOGLE_CLIENT_ID as string, 
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+            clientId: (process.env.GOOGLE_CLIENT_ID ?? process.env.BETTER_AUTH_GOOGLE_CLIENT_ID) as string, 
+            clientSecret: (process.env.GOOGLE_CLIENT_SECRET ?? process.env.BETTER_AUTH_GOOGLE_SECRET) as string, 
         }, 
     },
   database: mongodbAdapter(db, {

@@ -34,7 +34,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", geist.variable)}
     >
-      <body className="flex min-h-svh flex-col">
+      <body className="flex min-h-svh flex-col" suppressHydrationWarning>
         <ThemeProvider>
           <Navbar />
           <main className="flex-1">{children}</main>

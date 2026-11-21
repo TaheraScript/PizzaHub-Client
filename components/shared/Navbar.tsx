@@ -32,11 +32,6 @@ type SessionUser = {
   role?: string | null
 }
 
-const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/menu", label: "Browse Menu" },
-]
-
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
 }
@@ -57,11 +52,18 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const { data: session, isPending } = useSession()
+
   const user = session?.user as SessionUser | undefined
   const isLoggedIn = Boolean(user)
 
   const role: Role =
     user?.role === "vendor" || user?.role === "admin" ? user.role : "customer"
+
+  const LINKS = [
+    { href: "/", label: "Home" },
+    { href: "/menu", label: "Browse Menu" },
+    ...(isLoggedIn ? [{ href: `/dashboard/${role}`, label: "Dashboard" }] : []),
+  ]
 
   const handleSignOut = async () => {
     await signOut()
@@ -107,11 +109,12 @@ export function Navbar() {
             </div>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
-              <Button variant="ghost" render={<Link href="/sign-in" />}>
+              <Button variant="ghost" nativeButton={false} render={<Link href="/sign-in" />}>
                 Sign In
               </Button>
               <Button
                 className="font-semibold shadow-sm"
+                nativeButton={false}
                 render={<Link href="/sign-up" />}
               >
                 Sign Up
@@ -187,6 +190,7 @@ export function Navbar() {
                     <Button
                       variant="outline"
                       className="w-full"
+                      nativeButton={false}
                       render={<Link href="/sign-in" />}
                       onClick={() => setMobileOpen(false)}
                     >
@@ -194,6 +198,7 @@ export function Navbar() {
                     </Button>
                     <Button
                       className="w-full font-semibold"
+                      nativeButton={false}
                       render={<Link href="/sign-up" />}
                       onClick={() => setMobileOpen(false)}
                     >
