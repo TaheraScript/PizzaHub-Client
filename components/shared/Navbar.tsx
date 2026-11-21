@@ -61,7 +61,7 @@ export function Navbar() {
 
   const LINKS = [
     { href: "/", label: "Home" },
-    { href: "/menu", label: "Browse Menu" },
+    { href: "/browse-menu", label: "Browse Menu" },
     ...(isLoggedIn ? [{ href: `/dashboard/${role}`, label: "Dashboard" }] : []),
   ]
 

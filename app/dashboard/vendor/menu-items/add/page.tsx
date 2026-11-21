@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { createMenu } from "@/lib/actions/menu-items"
+import { useRouter } from "next/navigation"
 
 const CATEGORIES = [
   "Classic Pizzas",
@@ -29,6 +30,7 @@ const EMPTY_FORM = {
 }
 
 export default function AddMenuItemPage() {
+    const router =useRouter()
   const [form, setForm] = useState(EMPTY_FORM)
   const [image, setImage] = useState<File | null>(null)
 
@@ -38,28 +40,34 @@ export default function AddMenuItemPage() {
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
     setImage(event.target.files?.[0] ?? null)
 
-  const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-   
-    // Collects the form data only; saving to the server + ImgBB upload come later.
-    const menuItem = {
-      itemName: form.itemName.trim(),
-      category: form.category,
-      description: form.description.trim(),
-      price: Number(form.price),
-      location: form.location.trim(),
-      image,
-      status: "pending" as const,
-    }
-     const result = await createMenu(menuItem)
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault()
+  const formElement = event.currentTarget // save it before any await
+
+  const menuItem = {
+    itemName: form.itemName.trim(),
+    category: form.category,
+    description: form.description.trim(),
+    price: Number(form.price),
+    location: form.location.trim(),
+    image,
+    status: "pending" as const,
+  }
+
+  try {
+    const result = await createMenu(menuItem)
     console.log("New menu item:", result)
     toast.success("Menu item added and sent for review.")
 
     setForm(EMPTY_FORM)
     setImage(null)
-    event.currentTarget.reset()
+    formElement.reset()
+    router.push("/dashboard/vendor/menu-items")
+  } catch (error) {
+    toast.error("Could not add menu item")
+    console.error(error)
   }
-
+}
   return (
     <div className="mx-auto w-full max-w-2xl">
       <header className="mb-6">
