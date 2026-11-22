@@ -1,17 +1,9 @@
 "use client"
 
-import {
-  ChefHat,
-  CupSoda,
-  Drumstick,
-  LayoutGrid,
-  Pizza,
-  Salad,
-  Soup,
-  type LucideIcon,
-} from "lucide-react"
+import { LayoutGrid, Pizza } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { CATEGORY_ICON } from "@/components/menu/category-icon"
 import { ScrollRow } from "@/components/ui/scroll-row"
 import { togglePillVariants } from "@/components/ui/toggle-pill"
 
@@ -30,15 +22,6 @@ const SHORT_LABEL: Record<string, string> = {
   "Specialty / Gourmet Pizzas": "Gourmet",
   "Sides & Appetizers": "Sides",
   "Beverages & Desserts": "Drinks",
-}
-
-const CATEGORY_ICON: Record<string, LucideIcon> = {
-  "Classic Pizzas": Pizza,
-  "Vegetarian Pizzas": Salad,
-  "Meat Lovers": Drumstick,
-  "Specialty / Gourmet Pizzas": ChefHat,
-  "Sides & Appetizers": Soup,
-  "Beverages & Desserts": CupSoda,
 }
 
 export function CategoryTiles({

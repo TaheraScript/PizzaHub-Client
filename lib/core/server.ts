@@ -1,6 +1,10 @@
 import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { SignJWT } from "jose"
+
 import { auth } from "../auth"
-import { redirect } from "next/navigation";
+
+const jwtKey = new TextEncoder().encode(process.env.JWT_SECRET ?? "")
 
 export const getSession = async()=>{
     'use server'
@@ -46,11 +50,20 @@ export const requireRole = async (role: string) => {
 }
 export const getToken = async () => {
     const session = await getSession()
-    if (!session || !session.user || !session.session?.token) {
-        redirect("/unauthorized")
-         }
-        return session?.session.token
-   
+    if (!session || !session.user) {
+        redirect("/sign-in")
+    }
+    if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET is not set")
+    }
+    // Short-lived JWT sent as a Bearer token to the Express API, which verifies
+    // the signature + expiry and reloads the user for an authoritative role.
+    return await new SignJWT({ role: session.user.role, email: session.user.email })
+        .setProtectedHeader({ alg: "HS256" })
+        .setSubject(session.user.id)
+        .setIssuedAt()
+        .setExpirationTime("1h")
+        .sign(jwtKey)
 }
 
 export const authFetch = async(api : string) => {

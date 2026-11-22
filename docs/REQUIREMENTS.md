@@ -421,16 +421,16 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Sign In page
 - [ ] Admin role assignment (secure, no public admin signup)
 - [x] Session/role middleware on client — server-side `requireSession`/`requireRole` in dashboard layouts (unauth → Sign In, wrong role / blocked → unauthorized)
-- [ ] JWT middleware + role middleware on server
-- [ ] Route protection for dashboards (client + server)
+- [x] JWT middleware + role middleware on server — `requireAuth` (jose HS256 verify, 401 on invalid/expired) + `requireRole(...)` (403), reloads user for fresh role/blocked
+- [x] Route protection for dashboards (client + server) — Next `proxy.ts` (cookie pre-check) + server-side `requireSession`/`requireRole`
 - [x] Navbar reactive to auth state
 - [x] Responsive navbar (ShadCN sheet + dropdown, role-based links, brand logo)
 
 ### Public Pages
-- [ ] Home: banner
-- [ ] Home: featured items (6+, approved + active)
-- [ ] Home: categories section
-- [ ] Home: Why Choose PizzaHub?
+- [x] Home: banner
+- [x] Home: featured items (6+, approved + active)
+- [x] Home: categories section
+- [x] Home: Why Choose PizzaHub?
 - [ ] Home: second extra section
 - [ ] Home: Motion animations
 - [x] Browse Menu (search, category + location filter, loading/empty)
@@ -466,7 +466,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 
 ### Challenge / Optional
 - [x] Advanced search + price sorting (asc/desc)
-- [ ] JWT verification hardened (invalid/expired rejection)
+- [x] JWT verification hardened (invalid/expired rejection)
 - [ ] Optional feature #1: ______
 - [ ] Optional feature #2: ______
 

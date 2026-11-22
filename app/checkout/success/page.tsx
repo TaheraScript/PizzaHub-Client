@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 
 import { stripe } from '@/lib/stripe'
+import { requireSession } from '@/lib/core/server'
 import { Button } from '@/components/ui/button'
 import { cardClass } from '@/components/ui/card'
 import { PageContainer } from '@/components/ui/page-container'
@@ -56,6 +57,8 @@ export default async function CheckoutSuccessPage({
 }: {
   searchParams: SearchParams
 }) {
+  await requireSession()
+
   const { session_id } = await searchParams
 
   if (!session_id)

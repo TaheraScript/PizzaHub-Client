@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { headers } from "next/headers"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { CreditCard, Info } from "lucide-react"
 
 import { PaymentCheckout } from "@/app/checkout/payment-checkout"
@@ -28,6 +29,10 @@ export default async function CheckoutPage({
   }
 
   const session = await auth.api.getSession({ headers: await headers() })
+
+  if (session?.user?.isBlocked) {
+    redirect("/unauthorized")
+  }
 
   return (
     <div className="flex flex-col gap-6">

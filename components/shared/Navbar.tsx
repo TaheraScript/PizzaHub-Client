@@ -3,12 +3,26 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
-import { LogOut, Menu as MenuIcon } from "lucide-react"
+import {
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  Menu as MenuIcon,
+  Settings,
+} from "lucide-react"
 
 import { signOut, useSession } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/components/shared/Logo"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -29,7 +43,14 @@ const ROLE_LABEL: Record<Role, string> = {
 type SessionUser = {
   name?: string | null
   email?: string | null
+  image?: string | null
   role?: string | null
+}
+
+function initials(name?: string | null) {
+  if (!name) return "U"
+  const parts = name.trim().split(/\s+/).slice(0, 2)
+  return parts.map((part) => part[0]?.toUpperCase() ?? "").join("") || "U"
 }
 
 function isActive(pathname: string, href: string) {
@@ -97,16 +118,70 @@ export function Navbar() {
               <span className="hidden h-8 w-24 animate-pulse rounded-full bg-muted md:block" />
             </div>
           ) : isLoggedIn ? (
-            <div className="hidden items-center gap-2.5 md:flex">
-              <span className="max-w-40 truncate text-sm font-semibold">{user?.name}</span>
-              <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
-                {ROLE_LABEL[role]}
-              </span>
-              <Button variant="outline" onClick={handleSignOut}>
-                <LogOut />
-                Sign Out
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    className="hidden h-10 gap-2 rounded-full pr-2.5 pl-1.5 md:inline-flex"
+                  >
+                    <Avatar size="sm">
+                      {user?.image ? (
+                        <AvatarImage
+                          src={user.image}
+                          alt={user.name ?? "Profile"}
+                        />
+                      ) : null}
+                      <AvatarFallback>{initials(user?.name)}</AvatarFallback>
+                    </Avatar>
+                    <span className="max-w-32 truncate text-sm font-semibold">
+                      {user?.name}
+                    </span>
+                    <ChevronDown className="size-4 text-muted-foreground" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end" className="w-60">
+                <div className="flex items-center gap-2.5 p-2">
+                  <Avatar size="lg">
+                    {user?.image ? (
+                      <AvatarImage
+                        src={user.image}
+                        alt={user.name ?? "Profile"}
+                      />
+                    ) : null}
+                    <AvatarFallback>{initials(user?.name)}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      {user?.name}
+                    </p>
+                    {user?.email ? (
+                      <p className="truncate text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    ) : null}
+                    <span className="mt-1 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-foreground">
+                      {ROLE_LABEL[role]}
+                    </span>
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem render={<Link href={`/dashboard/${role}`} />}>
+                  <LayoutDashboard />
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem render={<Link href="/profile" />}>
+                  <Settings />
+                  Profile Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+                  <LogOut />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button variant="ghost" nativeButton={false} render={<Link href="/sign-in" />}>
@@ -170,12 +245,31 @@ export function Navbar() {
               <div className="p-4">
                 {isLoggedIn ? (
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar size="sm">
+                        {user?.image ? (
+                          <AvatarImage
+                            src={user.image}
+                            alt={user.name ?? "Profile"}
+                          />
+                        ) : null}
+                        <AvatarFallback>{initials(user?.name)}</AvatarFallback>
+                      </Avatar>
                       <p className="truncate text-sm font-semibold">{user?.name}</p>
-                      <span className="shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
+                      <span className="ml-auto shrink-0 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-semibold text-foreground">
                         {ROLE_LABEL[role]}
                       </span>
                     </div>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      nativeButton={false}
+                      render={<Link href="/profile" />}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Settings />
+                      Profile Settings
+                    </Button>
                     <Button
                       variant="outline"
                       className="w-full justify-center text-destructive hover:bg-destructive/10 hover:text-destructive"

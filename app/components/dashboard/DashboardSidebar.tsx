@@ -15,7 +15,6 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { useSession } from "@/lib/auth-client"
 import { Logo } from "@/components/shared/Logo"
 import {
   Sidebar,
@@ -132,14 +131,14 @@ const menuItemsByRole: Record<Role, MenuItem[]> = {
   ],
 }
 
-export function DashboardSidebar() {
+export function DashboardSidebar({
+  role,
+  name,
+}: {
+  role: Role
+  name?: string | null
+}) {
   const pathname = usePathname()
-  const { data: session } = useSession()
-
-  const role: Role =
-    session?.user?.role === "vendor" || session?.user?.role === "admin"
-      ? session.user.role
-      : "customer"
 
   const root = `/dashboard/${role}`
   const items = menuItemsByRole[role]
@@ -183,7 +182,7 @@ export function DashboardSidebar() {
       <SidebarFooter className="p-2">
         <div className="flex items-center gap-2 rounded-lg border border-sidebar-border px-2.5 py-2 text-xs">
           <span className="truncate font-medium text-sidebar-foreground">
-            {session?.user?.name}
+            {name}
           </span>
           <span className="ml-auto shrink-0 rounded-full bg-sidebar-accent px-2 py-0.5 font-semibold text-sidebar-accent-foreground">
             {ROLE_LABEL[role]}

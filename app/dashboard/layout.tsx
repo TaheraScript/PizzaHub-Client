@@ -8,12 +8,12 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  await requireSession()
+  const session = await requireSession()
 
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <DashboardSidebar />
+        <DashboardSidebar role={session.user.role} name={session.user.name} />
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-16 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border/80 bg-background/80 px-4 backdrop-blur-md sm:px-6">
             <SidebarTrigger />

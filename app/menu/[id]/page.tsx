@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { PageContainer } from "@/components/ui/page-container"
 import { getMenuItem } from "@/lib/api/menu"
+import { requireSession } from "@/lib/core/server"
 import type { MenuItem } from "@/types"
 
 type MenuItemPageProps = {
@@ -27,6 +28,8 @@ export async function generateMetadata({
 }
 
 export default async function MenuItemPage({ params }: MenuItemPageProps) {
+  await requireSession()
+
   const { id } = await params
 
   let item: MenuItem
