@@ -14,7 +14,7 @@ import { useSession } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import type { CreateOrderInput, MenuItem } from "@/types"
 import { useRouter } from "next/navigation"
-import { orderMenu } from "@/lib/actions/order"
+import { getOrderCount, orderMenu } from "@/lib/actions/order"
 
 const SIZE_CLASS =
   "h-12 w-full rounded-full text-base font-bold sm:w-auto sm:px-8"
@@ -37,17 +37,14 @@ export function OrderButton({ menuItems }: { menuItems: MenuItem }) {
       return
     }
 
-    if (user.role !== "customer") {
-      toast.error("Only customers can place orders")
+    else if (user.role == "customer") {
+     const countResult = await getOrderCount(`customerId=${user.id}`)
+     if (countResult.count >= 5){
+      router.push('/payment')
       return
-    }
-
-    if (!deliveryDate || !deliveryAddress.trim()) {
-      toast.error("Add a delivery date and address to place your order")
-      return
-    }
-
-    const order: CreateOrderInput = {
+     }
+     else{
+      const order: CreateOrderInput = {
       itemId: menuItems._id,
       customerId: user.id,
       customerName: user.name ?? undefined,
@@ -56,22 +53,22 @@ export function OrderButton({ menuItems }: { menuItems: MenuItem }) {
       deliveryAddress: deliveryAddress.trim(),
       message: message.trim() || undefined,
     }
-
-    try {
-      const result = await orderMenu(order)
+    const result = await orderMenu(order)
       if (result.insertedId) {
         toast.success("Order placed successfully")
         router.push("/dashboard/customer/orders")
       } else {
         toast.error("Could not place your order. Please try again.")
       }
-    } catch (error) {
-      toast.error("Could not place your order", {
-        description:
-          error instanceof Error ? error.message : "Please try again.",
-      })
+    } 
+     }
     }
-  }
+
+    if (!deliveryDate || !deliveryAddress.trim()) {
+      toast.error("Add a delivery date and address to place your order")
+      return
+    }
+
 
   const role = session?.user?.role
 

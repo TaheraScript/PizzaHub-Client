@@ -42,3 +42,10 @@ export const getOrder = async (query = ""): Promise<Order[]> => {
 
   return Array.isArray(body) ? body : []
 }
+
+//count customers order
+export const getOrderCount = async (query = ""): Promise<{count:number}> => {
+  const res = await fetch(`${BASE_URL}/orders/count?${query}`, { cache: "no-store" })
+
+  return res.json()
+}
