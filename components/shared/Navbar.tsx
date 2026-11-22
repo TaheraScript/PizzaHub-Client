@@ -14,6 +14,7 @@ import {
 import { signOut, useSession } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/components/shared/Logo"
+import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -113,6 +114,7 @@ export function Navbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <ThemeToggle />
           {isPending ? (
             <div className="flex items-center gap-2" aria-hidden="true">
               <span className="hidden h-8 w-24 animate-pulse rounded-full bg-muted md:block" />
