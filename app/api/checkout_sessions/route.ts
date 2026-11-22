@@ -7,6 +7,13 @@ import { auth } from '@/lib/auth'
 export async function POST() {
   const userSession = await auth.api.getSession({ headers: await headers() })
   try {
+    if (!userSession) {
+      return NextResponse.json(
+        { error: 'You must be signed in to start a checkout' },
+        { status: 401 }
+      )
+    }
+
     const headersList = await headers()
     const origin =
       headersList.get('origin') ??
@@ -19,7 +26,7 @@ export async function POST() {
       "customer_email": userSession?.user.email,
       metadata:{
         userId:userSession?.user.id
-      }
+      },
       line_items: [
         {
           // TODO: move this Price ID into STRIPE_PREMIUM_PRICE_ID in .env
