@@ -106,17 +106,17 @@ export default function SignUpPage() {
       const body = new FormData()
       body.append("image", file)
 
-      const res = await fetch(
-        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-        { method: "POST", body }
-      )
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body,
+      })
       const result = await res.json()
 
-      if (!res.ok || !result?.data?.url) {
-        throw new Error(result?.error?.message ?? "Image upload failed.")
+      if (!res.ok || !result?.url) {
+        throw new Error(result?.error ?? "Image upload failed.")
       }
 
-      setImageUrl(result.data.url)
+      setImageUrl(result.url)
       toast.success("Profile image uploaded.")
     } catch (error) {
       toast.error(
