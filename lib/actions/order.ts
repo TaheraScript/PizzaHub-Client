@@ -1,5 +1,6 @@
+'use server'
 import type { CreateOrderInput, Order } from "@/types"
-
+import { authFetch } from "../core/server"
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
 
 type OrderResponse = {
@@ -11,22 +12,11 @@ type OrdersResponse = Order[] | { message?: string }
 
 //order menu item(customer)
 export const orderMenu = async (data: CreateOrderInput): Promise<OrderResponse> => {
-  const res = await fetch(`${BASE_URL}/orders`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  })
+    const api = `${BASE_URL}/orders?${query}`
+  const res = await authFetch(api)
+    return res.json()
 
-  const body = (await res.json().catch(() => null)) as OrderResponse | null
-
-  if (!res.ok) {
-    throw new Error(body?.message || `Failed to place order (${res.status})`)
-  }
-
-  return body ?? {}
-}
+ 
 
 //get orders (a customer's own orders, or a vendor's incoming orders)
 export const getOrder = async (query = ""): Promise<Order[]> => {

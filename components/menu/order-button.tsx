@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import type { CreateOrderInput, MenuItem } from "@/types"
 import { useRouter } from "next/navigation"
 import { getOrderCount, orderMenu } from "@/lib/actions/order"
+import { getUserPremiumById } from "@/lib/api/user"
 
 const SIZE_CLASS =
   "h-12 w-full rounded-full text-base font-bold sm:w-auto sm:px-8"
@@ -38,11 +39,15 @@ export function OrderButton({ menuItems }: { menuItems: MenuItem }) {
     }
 
     else if (user.role == "customer") {
+      
+      const premiumResult = await getUserPremiumById(user.id) 
+      console.log("Premium Result:", premiumResult)
+
      const countResult = await getOrderCount(`customerId=${user.id}`)
-     if (countResult.count >= 5){
-      router.push('/payment')
-      return
-     }
+     if(!premiumResult?.premium && countResult.count >= 5){
+        router.push('/checkout')
+        return
+      }
      else{
       const order: CreateOrderInput = {
       itemId: menuItems._id,
