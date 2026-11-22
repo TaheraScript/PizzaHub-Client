@@ -50,6 +50,7 @@ function SignInForm() {
     email: "",
     password: "",
   })
+  const [submitting, setSubmitting] = useState(false)
 
   const updateField = (field: keyof SignInForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -59,25 +60,32 @@ function SignInForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const { error } = await authClient.signIn.email({
-      email: form.email,
-      password: form.password,
-      rememberMe: true,
-      callbackURL: redirectTo,
-    })
+    setSubmitting(true)
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email: form.email,
+        password: form.password,
+        rememberMe: true,
+      })
 
-    if (error) {
-      toast.error(error.message ?? "Invalid email or password.")
-      return
+      if (error) {
+        toast.error(error.message ?? "Invalid email or password.")
+        return
+      }
+
+      toast.success("Signed in successfully!")
+      const role = data?.user?.role ?? "customer"
+      const destination =
+        redirectTo && redirectTo !== "/" ? redirectTo : `/dashboard/${role}`
+      router.push(destination)
+      router.refresh()
+    } finally {
+      setSubmitting(false)
     }
-
-    toast.success("Signed in successfully!")
-    router.push("/")
-    router.refresh()
   }
 
   const handleGoogle = async () => {
-    await authClient.signIn.social({ provider: "google", callbackURL: "/" })
+    await authClient.signIn.social({ provider: "google", callbackURL: redirectTo })
   }
 
   return (
@@ -164,9 +172,10 @@ function SignInForm() {
 
             <Button
               type="submit"
+              disabled={submitting}
               className="mt-1 h-11 w-full bg-brand-orange font-semibold tracking-wide text-white uppercase hover:bg-brand-orange/90"
             >
-              Sign in
+              {submitting ? "Signing in…" : "Sign in"}
             </Button>
 
             <Button

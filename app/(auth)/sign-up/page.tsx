@@ -64,6 +64,15 @@ function GoogleIcon() {
   )
 }
 
+function validatePassword(password: string): string | null {
+  if (password.length < 6) return "Password must be at least 6 characters."
+  if (!/[A-Z]/.test(password))
+    return "Password must include at least 1 uppercase letter."
+  if (!/[a-z]/.test(password))
+    return "Password must include at least 1 lowercase letter."
+  return null
+}
+
 export default function SignUpPage() {
   const [form, setForm] = useState<SignUpForm>({
     name: "",
@@ -74,37 +83,97 @@ export default function SignUpPage() {
     role: "customer",
   })
   const [agreed, setAgreed] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const updateField = <K extends keyof SignUpForm>(field: K, value: SignUpForm[K]) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) =>
-    updateField("image", event.target.files?.[0] ?? null)
+  const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null
+    updateField("image", file)
+
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    setImagePreview(file ? URL.createObjectURL(file) : null)
+    setImageUrl(null)
+
+    if (!file) return
+
+    setUploadingImage(true)
+    try {
+      const body = new FormData()
+      body.append("image", file)
+
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
+        { method: "POST", body }
+      )
+      const result = await res.json()
+
+      if (!res.ok || !result?.data?.url) {
+        throw new Error(result?.error?.message ?? "Image upload failed.")
+      }
+
+      setImageUrl(result.data.url)
+      toast.success("Profile image uploaded.")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not upload the image."
+      )
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   const router = useRouter()
 
   const handleSubmit = async (data: SignUpForm) => {
+    if (!agreed) {
+      toast.error("Please accept the Terms of Service to continue.")
+      return
+    }
     if (data.password !== data.confirmPassword) {
       toast.error("Passwords do not match.")
       return
     }
-
-    const { error } = await authClient.signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      role: data.role,
-      callbackURL: "/",
-    })
-
-    if (error) {
-      toast.error(error.message ?? "Could not create your account. Please try again.")
+    const passwordError = validatePassword(data.password)
+    if (passwordError) {
+      toast.error(passwordError)
+      return
+    }
+    if (uploadingImage) {
+      toast.info("Hang on — your profile image is still uploading.")
       return
     }
 
-    toast.success("Account created! Welcome to PizzaHub.")
-    router.push("/")
-    router.refresh()
+    setSubmitting(true)
+    try {
+      const { error } = await authClient.signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        image: imageUrl ?? undefined,
+        callbackURL: "/",
+      })
+
+      if (error) {
+        toast.error(
+          error.message ?? "Could not create your account. Please try again."
+        )
+        return
+      }
+
+      toast.success("Account created! Welcome to PizzaHub.")
+      router.push(
+        data.role === "vendor" ? "/dashboard/vendor" : "/dashboard/customer"
+      )
+      router.refresh()
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleGoogle = async () => {
@@ -208,6 +277,7 @@ export default function SignUpPage() {
                 type="password"
                 placeholder="Your password"
                 autoComplete="new-password"
+                minLength={6}
                 value={form.password}
                 onChange={(event) => updateField("password", event.target.value)}
                 required
@@ -242,8 +312,26 @@ export default function SignUpPage() {
                 name="image"
                 type="file"
                 accept="image/*"
+                disabled={submitting}
                 onChange={handleImageChange}
               />
+              {imagePreview ? (
+                <div className="mt-1 flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imageUrl ?? imagePreview}
+                    alt="Profile preview"
+                    className="size-14 rounded-full border border-border object-cover"
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {uploadingImage
+                      ? "Uploading image…"
+                      : imageUrl
+                        ? "Image uploaded"
+                        : "Preview only"}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -303,9 +391,10 @@ export default function SignUpPage() {
 
             <Button
               type="submit"
+              disabled={submitting || uploadingImage}
               className="h-11 w-full bg-brand-orange font-semibold tracking-wide text-white uppercase hover:bg-brand-orange/90"
             >
-              Sign up
+              {submitting ? "Creating account…" : "Sign up"}
             </Button>
 
             <Button

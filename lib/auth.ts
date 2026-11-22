@@ -8,6 +8,8 @@ const db = client.db(process.env.MONGODB_DB_NAME ?? "pizzahub")
 export const auth = betterAuth({
      emailAndPassword: { 
     enabled: true, 
+    // §5: minimum 6 characters (upper/lowercase enforced in the sign-up form).
+    minPasswordLength: 6,
   }, user: {
        additionalFields: {
           role: {

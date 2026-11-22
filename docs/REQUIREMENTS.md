@@ -416,9 +416,9 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Express + MongoDB server repo scaffolded
 
 ### Auth
-- [ ] Better Auth configured (email/password + Google) — *started: `lib/auth.ts` with MongoDB adapter reading `MONGODB_URI`/`MONGODB_DB_NAME` from env*
-- [ ] Sign Up page (role select, validation, image upload)
-- [ ] Sign In page
+- [x] Better Auth configured (email/password + Google) — MongoDB adapter, role + `isBlocked`/`subscriptionPlan`/`subscriptionExpiresAt` fields, `minPasswordLength: 6`; secrets via env
+- [x] Sign Up page (role select, validation, image upload)
+- [x] Sign In page
 - [ ] Admin role assignment (secure, no public admin signup)
 - [ ] Session/role middleware on client
 - [ ] JWT middleware + role middleware on server
