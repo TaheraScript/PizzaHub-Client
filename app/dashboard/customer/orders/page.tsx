@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/dashboard/page-header"
 import { MenuImage } from "@/components/menu/menu-image"
 import { CancelOrderButton } from "@/components/orders/cancel-order-button"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
+import { OrderTimeline } from "@/components/orders/order-timeline"
 import { Button } from "@/components/ui/button"
 import { cardClass } from "@/components/ui/card"
 import { getOrder } from "@/lib/actions/order"
@@ -76,6 +77,8 @@ function OrderCard({ order }: { order: Order }) {
             </div>
           </div>
         </dl>
+
+        <OrderTimeline status={order.status} />
 
         {order.message ? (
           <p className="flex items-start gap-2 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground">

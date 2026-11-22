@@ -1,6 +1,6 @@
 'use server'
 import type { CreateOrderInput, Order } from "@/types"
-import { protectedMutation } from "../core/server"
+import { getToken, protectedMutation } from "../core/server"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
@@ -19,8 +19,12 @@ export const orderMenu = async (data: CreateOrderInput): Promise<OrderResponse> 
 
 //get orders (a customer's own orders, or a vendor's incoming orders)
 export const getOrder = async (query = ""): Promise<Order[]> => {
+  const token = await getToken()
   const search = query ? `?${query}` : ""
-  const res = await fetch(`${BASE_URL}/orders${search}`, { cache: "no-store" })
+  const res = await fetch(`${BASE_URL}/orders${search}`, {
+    cache: "no-store",
+    headers: { authorization: `Bearer ${token}` },
+  })
 
   const body = (await res.json().catch(() => null)) as OrdersResponse | null
 
@@ -34,7 +38,57 @@ export const getOrder = async (query = ""): Promise<Order[]> => {
 
 //count customers order
 export const getOrderCount = async (query = ""): Promise<{count:number}> => {
-  const res = await fetch(`${BASE_URL}/orders/count?${query}`, { cache: "no-store" })
+  const token = await getToken()
+  const res = await fetch(`${BASE_URL}/orders/count?${query}`, {
+    cache: "no-store",
+    headers: { authorization: `Bearer ${token}` },
+  })
 
   return res.json()
+}
+
+// customer cancels their own pending order
+export const cancelOrder = async (orderId: string) => {
+  const token = await getToken()
+  const res = await fetch(`${BASE_URL}/orders/${encodeURIComponent(orderId)}`, {
+    method: 'PATCH',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status: 'cancelled' }),
+  })
+
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(body?.message || `Failed to cancel order (${res.status})`)
+  }
+
+  return body
+}
+
+// vendor: accept or reject one of their own pending orders
+export const updateVendorOrderStatus = async (
+  orderId: string,
+  status: "accepted" | "rejected"
+) => {
+  const token = await getToken()
+  const res = await fetch(
+    `${BASE_URL}/vendor/orders/${encodeURIComponent(orderId)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  )
+
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(body?.message || `Failed to update order (${res.status})`)
+  }
+
+  return body
 }
