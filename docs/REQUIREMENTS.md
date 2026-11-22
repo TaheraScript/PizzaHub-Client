@@ -439,39 +439,39 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 
 ### Vendor
 - [x] Dashboard layout (sidebar, role-based nav)
-- [ ] Overview (stats + charts)
+- [x] Overview (stats + charts)
 - [ ] Add Menu Item (ImgBB upload, pending default, 3-item limit)
-- [ ] My Menu Items (list, update, delete, availability)
-- [ ] Customer Orders (accept/reject once, ownership checks)
-- [ ] Subscription (plans, Upgrade button)
-- [ ] Profile Settings
+- [x] My Menu Items (list, update, delete, availability)
+- [x] Customer Orders (accept/reject once, ownership checks)
+- [x] Subscription (plans, Upgrade button)
+- [x] Profile Settings
 
 ### Customer
-- [ ] Overview (stats + charts)
-- [ ] My Orders (details, cancel pending only)
+- [x] Overview (stats + charts)
+- [x] My Orders (details, cancel pending only)
 - [x] Order form (date, address, message, duplicate prevention)
-- [ ] Profile Settings
+- [x] Profile Settings
 
 ### Admin
-- [ ] Overview (all platform stats)
-- [ ] Manage Users (search, role filter, block/unblock — optional)
-- [ ] Manage Menu Items (approve/reject/status/delete)
-- [ ] Transactions (read-only)
+- [x] Overview (all platform stats)
+- [x] Manage Users (search, role filter, block/unblock — optional)
+- [x] Manage Menu Items (approve/reject/status/delete)
+- [x] Transactions (read-only)
 
 ### Payments
-- [ ] Stripe Checkout session creation (server)
-- [ ] Payment Success / Cancel pages
-- [ ] Stripe webhook → transaction + subscription activation
-- [ ] Subscription expiry handling
+- [x] Stripe Checkout session creation (server) — vendor-only, identity from session
+- [x] Payment Success / Cancel pages
+- [x] Stripe webhook → transaction + subscription activation — signed, idempotent, activation only here
+- [x] Subscription expiry handling — expiry stored; downgrade on subscription.deleted
 
 ### Challenge / Optional
 - [x] Advanced search + price sorting (asc/desc)
 - [x] JWT verification hardened (invalid/expired rejection)
-- [ ] Optional feature #1: ______
-- [ ] Optional feature #2: ______
+- [x] Optional feature #1: Dark / light mode toggle
+- [x] Optional feature #2: Order status timeline
 
 ### Ship
-- [ ] README complete (incl. challenge implementation notes + env var names)
+- [x] README complete (incl. challenge implementation notes + env var names)
 - [ ] Client 20+ meaningful commits
 - [ ] Server 12+ meaningful commits
 - [ ] Production deploy verified (no reload/CORS/webhook errors)

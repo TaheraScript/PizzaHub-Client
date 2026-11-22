@@ -2,178 +2,169 @@
 
 **Fresh flavors, delivered to your door.**
 
-PizzaHub is a full-stack pizza ordering and delivery platform that connects customers with local pizza restaurants. Customers can explore pizza menus, discover restaurants, and place delivery orders. Restaurant vendors can manage their restaurant profiles, publish menu items, and handle customer orders, while administrators manage users, review menu items, and monitor platform transactions.
+PizzaHub is a full-stack, role-based pizza ordering and delivery platform that connects customers with local pizza restaurants. Customers browse menus and place delivery orders; vendors manage their menu and incoming orders; admins manage users, review menu items, and monitor transactions.
 
-🔗 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app/)
+- 🔗 **Live Demo:** https://pizzahub-client-rust.vercel.app/
+- 💻 **Client repo:** https://github.com/TaheraScript/PizzaHub-Client
+- ⚙️ **Server repo:** https://github.com/TaheraScript/PizzaHub-Server
 
-## 📸 Project Screenshot
-
-![PizzaHub Screenshot](https://raw.githubusercontent.com/TaheraScript/PizzaHub-Client/main/public/images/pizzahub-screenshot.png)
+> **Note:** This repo is the **Next.js client**. The Express + MongoDB API lives in the separate server repo. Refer to each repo's README for its own setup.
 
 ## ✨ Key Features
 
-1. **🔐 Secure Authentication & Role-Based Access** — Sign up and sign in using email/password or Google authentication, powered by Better Auth. Includes password validation, JWT-based authentication, and role-based access control for Customers, Vendors, and Admins.
+1. **Authentication & roles** — Email/password + Google via Better Auth; JWT-based API auth; Customer / Vendor / Admin role-based access (verified server-side, not just hidden links).
+2. **Menu discovery** — Public browse with search, category + location filters, and price sorting (asc/desc); only **approved + active** items are public.
+3. **Item details & ordering** — Gallery, vendor info, order form (delivery date, address, notes); vendors can't order their own items and admins can't order.
+4. **Vendor dashboard** — Overview stats + chart, add/edit/delete menu items, availability toggle, incoming orders (accept/reject once), and subscription plans.
+5. **Menu approval** — New items are `pending` until an admin approves; rejected items never appear publicly.
+6. **Premium subscription** — Stripe Checkout for vendors; Premium unlocks unlimited items, a badge, and featured placement. **Activated only from a verified Stripe webhook.**
+7. **Admin dashboard** — Platform stats, user search/filter + block/unblock, menu item review (approve/reject/delete), and read-only transactions.
+8. **Profile settings** — Update name and avatar; role/subscription can't be changed by the user.
+9. **Polish** — Responsive pizza-themed UI, motion animations, loading/empty/error states, custom 404 + error boundaries, toast notifications (never `alert()`), and dark/light mode.
 
-2. **🍕 Dynamic Pizza Menu Discovery** — Browse approved and active pizza items with advanced search, category and location filters, and price sorting in ascending and descending order.
-
-3. **🛒 Customer Order Management** — Place pizza orders by providing delivery dates, addresses, and special instructions. Track order statuses, view order details, and cancel pending orders through the Customer Dashboard.
-
-4. **🏪 Vendor Restaurant Management** — Create and manage restaurant profiles, add menu items with image uploads, update item information, manage availability, and delete owned menu items.
-
-5. **📋 Menu Item Approval System** — Newly submitted menu items remain pending until reviewed by an administrator. Only approved and active items appear on the public menu.
-
-6. **📦 Vendor Order Management** — Receive customer orders and accept or reject pending requests. View customer information, delivery details, and order statuses through the Vendor Dashboard.
-
-7. **💳 Premium Subscription & Stripe Integration** — Upgrade from the Free plan to Premium using Stripe Checkout. Premium vendors receive unlimited active menu items, a Premium badge, and featured homepage placement. Subscription activation is handled through verified Stripe webhook events.
-
-8. **🛡️ Admin Management Dashboard** — Manage registered users, search and filter accounts, review and approve or reject menu items, manage published items, and monitor vendor subscription transactions.
-
-9. **📊 Role-Based Dashboards & Analytics** — Separate Customer, Vendor, and Admin dashboards with relevant statistics, management tools, and data visualizations.
-
-10. **👤 Profile & Account Management** — Update profile information and profile pictures while protecting sensitive account properties such as user roles and subscription status.
-
-11. **🏡 Interactive Homepage** — Explore a pizza-themed hero section, featured menu items, pizza categories, platform benefits, and additional promotional content with smooth animations.
-
-12. **🎨 Responsive User Interface** — Professional pizza-themed design with warm colors, reusable ShadCN components, responsive layouts, loading states, empty states, and toast notifications.
-
-## 🧰 Technologies Used
+## 🧰 Tech Stack
 
 | Category | Technologies |
 |---|---|
-| Framework | Next.js (App Router), React |
+| Framework | Next.js (App Router, v16), React 19 |
 | Language | TypeScript |
-| UI Components | shadcn/ui |
-| Styling | Tailwind CSS |
-| Authentication | Better Auth, Google OAuth, JWT |
-| Database | MongoDB |
-| Animations | Framer Motion / Motion |
-| Icons | lucide-react |
-| Notifications | Sonner / React Toastify |
-| Forms & Validation | React Hook Form, Zod |
-| Payment Integration | Stripe Checkout |
-| API Communication | Fetch API |
+| UI | shadcn/ui (base-ui), Tailwind CSS v4, lucide-react |
+| Auth | Better Auth (email/password + Google OAuth), JWT (`jose`) |
+| Database | MongoDB (Better Auth adapter + business collections) |
+| Payments | Stripe Checkout + webhook |
+| Animation | framer-motion |
+| Notifications | sonner |
+| Image hosting | ImgBB (server-side upload) |
 
-## 🚀 Getting Started
+Server repo: Node.js, Express, MongoDB, `jose` (JWT verification), Stripe.
 
-Follow these steps to run the project locally.
-
-**1. Clone the repository**
+## 🚀 Getting Started (client)
 
 ```bash
 git clone https://github.com/TaheraScript/PizzaHub-Client.git
-```
-
-**2. Navigate to the project directory**
-
-```bash
 cd PizzaHub-Client
-```
-
-**3. Install dependencies**
-
-```bash
 npm install
 ```
 
-**4. Configure environment variables**
-
-Create a `.env.local` file in the root directory and add the following variables:
+Create `.env.local` (copy from `.env.example`):
 
 ```env
-# Backend API
-NEXT_PUBLIC_API_URL=http://localhost:5000
-
 # Better Auth
-BETTER_AUTH_SECRET=your-better-auth-secret
+BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 
-# Google OAuth
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# MongoDB (if configured in the client-side Better Auth setup)
-MONGODB_URI=your-mongodb-connection-string
+# MongoDB (Better Auth adapter + business data)
+MONGODB_URI=
 MONGODB_DB_NAME=pizzahub
 
-# Stripe (only if required by your client integration)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+# Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# JWT — must match the Express server's JWT_SECRET
+JWT_SECRET=
+
+# Express API
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Stripe (vendor subscription only)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_PREMIUM_PRICE_ID=
+STRIPE_WEBHOOK_SECRET=
+
+# ImgBB (server-side only)
+IMGBB_API_KEY=
 ```
 
-**5. Start the development server**
+Seed demo data (admin + demo vendor/customer + 24 approved items):
+
+```bash
+npm run seed
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open http://localhost:3000.
 
-## 📜 Application Routes
+### Seed credentials (demo)
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@pizzahub.com` | `Admin1234` |
+| Vendor | `vendor@pizzahub.com` | `Vendor1234` |
+| Customer | `customer@pizzahub.com` | `Customer1234` |
+
+### Server environment variables
+
+```
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=
+MONGODB_DB_NAME=pizzahub
+BETTER_AUTH_SECRET=        # must match the client
+JWT_SECRET=                # must match the client
+CLIENT_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PREMIUM_PRICE_ID=
+IMGBB_API_KEY=
+```
+
+## 🗺️ Routes
 
 | Route | Access | Description |
 |---|---|---|
-| `/` | Public | Homepage with hero, featured pizzas, categories, and promotional sections |
-| `/browse-menu` | Public | Browse, search, filter, and sort available pizza items |
-| `/menu/[id]` | Private | View pizza details and place orders |
-| `/sign-in` | Public | Sign in using email/password or Google |
-| `/sign-up` | Public | Register as a Customer or Vendor |
-| `/payment-success` | Private | Display subscription payment confirmation |
-| `/payment-cancel` | Private | Display subscription payment cancellation |
-| `/dashboard/customer` | Customer | Customer dashboard overview |
-| `/dashboard/customer/my-orders` | Customer | View and manage personal orders |
-| `/dashboard/customer/profile-settings` | Customer | Update customer profile |
-| `/dashboard/vendor` | Vendor | Vendor dashboard overview |
-| `/dashboard/vendor/my-menu-items` | Vendor | View and manage restaurant menu items |
-| `/dashboard/vendor/add-menu-item` | Vendor | Add new pizza and menu items |
-| `/dashboard/vendor/customer-orders` | Vendor | Manage incoming customer orders |
-| `/dashboard/vendor/subscription` | Vendor | View and manage subscription plans |
-| `/dashboard/vendor/profile-settings` | Vendor | Update vendor profile |
-| `/dashboard/admin` | Admin | Admin dashboard overview |
-| `/dashboard/admin/manage-users` | Admin | Manage registered users |
-| `/dashboard/admin/manage-menu-items` | Admin | Review and manage submitted menu items |
-| `/dashboard/admin/transactions` | Admin | View vendor subscription transactions |
+| `/` | Public | Hero, featured items, categories, "Why PizzaHub", how it works |
+| `/browse-menu` | Public | Search, filter (category/location), price sort |
+| `/menu/[id]` | Private | Item details + order form |
+| `/sign-in`, `/sign-up` | Public | Auth (email/password + Google) |
+| `/checkout/success`, `/checkout/cancel` | Private | Stripe result pages (display only) |
+| `/profile` | Private | Profile settings (name + avatar) |
+| `/dashboard/customer` | Customer | Overview (stats + chart) |
+| `/dashboard/customer/orders` | Customer | My orders; cancel pending |
+| `/dashboard/vendor` | Vendor | Overview (stats + chart) |
+| `/dashboard/vendor/menu-items` (+ `/add`, `/[id]/edit`) | Vendor | Manage own items |
+| `/dashboard/vendor/orders` | Vendor | Accept/reject incoming orders |
+| `/dashboard/vendor/subscription` | Vendor | Plans + Upgrade |
+| `/dashboard/admin` | Admin | Platform overview |
+| `/dashboard/admin/users` | Admin | Manage users / block |
+| `/dashboard/admin/menu-items` | Admin | Approve / reject / delete |
+| `/dashboard/admin/transactions` | Admin | Read-only payments |
 
-**Route Protection:** Private routes are protected through authentication and role-based authorization. Users can only access dashboard routes permitted for their assigned roles. Protected backend operations also verify authentication, permissions, and resource ownership.
+**Route protection:** a Next `proxy.ts` does an optimistic cookie check on private routes; the authoritative checks (valid session, role, not blocked) run server-side in the dashboard layouts and on the Express API.
 
-## 🔎 Advanced Search & Sorting
+## 🏆 Challenge Implementation Notes
 
-The Browse Menu page supports advanced menu item discovery through backend API query parameters.
+**1. Advanced search + sorting (API query params)**
+`/browse-menu` writes `search`, `category`, `location`, `sort` to the URL. The server's `GET /menu-items` builds the Mongo query: case-insensitive regex on name, exact category/location, a `status: approved` guard, and `sort=price-asc|price-desc` → `{ price: ±1 }`.
 
-- Search menu items by name.
-- Filter by category and restaurant location.
-- Sort prices in ascending order.
-- Sort prices in descending order.
-- Display only approved and active menu items.
+**2. JWT / token verification (Express middleware flow)**
+The client signs a short-lived (1h) HS256 JWT with `JWT_SECRET` in `getToken()` and sends it as `Authorization: Bearer`. The Express server's `requireAuth` verifies signature + expiry with `jose` (`401` if invalid/expired), reloads the user from the DB for an authoritative role/blocked state, then `requireRole(...)` enforces roles (`403`). Ownership is checked before any update/delete.
 
-Search, filtering, and sorting are handled through API query parameters to retrieve relevant results from the backend.
+## 🔐 Security Notes
 
-## 🔐 Additional Notes
+- Only verified Stripe webhook events activate Premium — never the success redirect.
+- Public listings always filter to approved + active items.
+- Client-sent `customerId` / `vendorId` / `status` / `role` / `subscriptionPlan` are ignored; the server derives them (JWT / server rules).
+- Ownership checks on every order and menu-item mutation.
+- Secrets live in env files only; `.env*` is git-ignored (`.env.example` kept).
 
-- **Authentication:** Better Auth handles user authentication, while role-based authorization restricts access to Customer, Vendor, and Admin features.
-- **JWT Security:** Authenticated API requests include JWT tokens for server-side verification.
-- **Image Upload:** Menu item images are uploaded through ImgBB, and the returned image URLs are stored in MongoDB.
-- **Subscription Management:** Only verified Stripe webhook events can activate or update Premium subscriptions.
-- **Order Management:** Customers can cancel only pending orders. Vendors can process only pending orders belonging to their restaurants.
-- **Free Subscription Limit:** Free vendors can have a maximum of three active menu items, while Premium vendors can publish unlimited active items.
-- **Security:** Users cannot modify their own roles or subscription status through profile updates.
-- **Environment Variables:** Never commit `.env` or `.env.local` files or expose secret credentials in the repository.
+## 🔗 Links
 
-## 🔗 Relevant Links
-
-- 🌐 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app/)
-- 💻 **Client Repository:** [PizzaHub Client](https://github.com/TaheraScript/PizzaHub-Client)
-- ⚙️ **Server Repository:** [PizzaHub Server](https://github.com/TaheraScript/PizzaHub-Server)
-- ▲ **Next.js:** [nextjs.org](https://nextjs.org/)
-- ⚛️ **React:** [react.dev](https://react.dev/)
-- 📘 **TypeScript:** [typescriptlang.org](https://www.typescriptlang.org/)
-- 🎨 **Tailwind CSS:** [tailwindcss.com](https://tailwindcss.com/)
-- 🧩 **shadcn/ui:** [ui.shadcn.com](https://ui.shadcn.com/)
-- 🍃 **MongoDB:** [mongodb.com](https://www.mongodb.com/)
-- 🔐 **Better Auth:** [better-auth.com](https://www.better-auth.com/)
-- 💳 **Stripe:** [stripe.com](https://stripe.com/)
-- 🖼️ **ImgBB:** [imgbb.com](https://imgbb.com/)
-- 🎬 **Motion:** [motion.dev](https://motion.dev/)
-
----
-
-**Developed with ❤️ by Tahera Akter**
+- Next.js — https://nextjs.org
+- React — https://react.dev
+- Better Auth — https://www.better-auth.com
+- MongoDB — https://www.mongodb.com
+- Stripe — https://stripe.com
+- shadcn/ui — https://ui.shadcn.com
+- Tailwind CSS — https://tailwindcss.com
+- ImgBB — https://imgbb.com
+- Motion (framer-motion) — https://motion.dev
