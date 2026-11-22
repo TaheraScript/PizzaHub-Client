@@ -112,7 +112,9 @@ async function ensureAccount(account) {
         role: account.role,
         emailVerified: true,
         isBlocked: false,
-        subscriptionPlan: "free",
+        // The demo vendor owns the 24 seeded items, so keep it on Premium
+        // (free plan caps active items at 3, §8/§10).
+        subscriptionPlan: account.role === "vendor" ? "premium" : "free",
         ...(account.businessName ? { businessName: account.businessName } : {}),
       },
     }
