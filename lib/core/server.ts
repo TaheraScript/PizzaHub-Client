@@ -10,10 +10,44 @@ export const getSession = async()=>{
     return session
 }
 
+export const protectedMutation = async (api: string,method: string, body?: unknown) => {
+    const token = await getToken()
+    const res = await fetch(api, {
+        method: method, 
+        headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`
+        },
+        body: body ? JSON.stringify(body) : null
+    })
+    if(res.status === 401 || res.status === 403){
+        redirect("/unauthorized")
+    }
+    return res
+}
+
 export const requireRole = async (role: string) => {
     const session = await getSession()
     if (!session || !session.user || session.user.role !== role) {
         redirect("/unauthorized")
     }
     return session
+}
+export const getToken = async () => {
+    const session = await getSession()
+    if (!session || !session.user || !session.session?.token) {
+        redirect("/unauthorized")
+         }
+        return session?.session.token
+   
+}
+
+export const authFetch = async(api : string) => {
+    const token = await getToken()
+    const res = await fetch(api, {
+        headers: {
+            authorization: `Bearer ${token}`
+        }
+    })
+    return res
 }

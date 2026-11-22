@@ -1,6 +1,7 @@
 'use server'
 import type { CreateOrderInput, Order } from "@/types"
-import { authFetch } from "../core/server"
+import { protectedMutation } from "../core/server"
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000'
 
 type OrderResponse = {
@@ -12,11 +13,9 @@ type OrdersResponse = Order[] | { message?: string }
 
 //order menu item(customer)
 export const orderMenu = async (data: CreateOrderInput): Promise<OrderResponse> => {
-    const api = `${BASE_URL}/orders?${query}`
-  const res = await authFetch(api)
-    return res.json()
-
- 
+  const res = await protectedMutation(`${BASE_URL}/orders`, 'POST', data)
+  return res.json()
+}
 
 //get orders (a customer's own orders, or a vendor's incoming orders)
 export const getOrder = async (query = ""): Promise<Order[]> => {
