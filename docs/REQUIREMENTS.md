@@ -410,13 +410,13 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] ShadCN + Tailwind v4 set up
 - [x] Shared `Navbar` / `Footer` components created
 - [x] Design tokens / pizza theme (reds, oranges, cream) in `globals.css`
-- [ ] Reusable primitives (section heading, cards, loaders, empty states)
-- [ ] Toast system (sonner or equivalent)
-- [ ] `.env.local` + `.env.example` with all required var names (see §23)
-- [ ] Express + MongoDB server repo scaffolded
+- [x] Reusable primitives (section heading, cards, loaders, empty/error states, confirm dialog)
+- [x] Toast system (sonner or equivalent) — consolidated on `sonner`; duplicate base-ui toaster removed
+- [x] `.env.local` + `.env.example` with all required var names (see §23)
+- [x] Express + MongoDB server repo scaffolded
 
 ### Auth
-- [ ] Better Auth configured (email/password + Google) — *started: `lib/auth.ts` with MongoDB adapter; still hardcodes the Mongo URI, must move to env*
+- [ ] Better Auth configured (email/password + Google) — *started: `lib/auth.ts` with MongoDB adapter reading `MONGODB_URI`/`MONGODB_DB_NAME` from env*
 - [ ] Sign Up page (role select, validation, image upload)
 - [ ] Sign In page
 - [ ] Admin role assignment (secure, no public admin signup)

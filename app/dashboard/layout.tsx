@@ -1,7 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { DashboardSidebar } from "../components/dashboard/DashboardSidebar"
-import { Toaster } from "@/components/ui/toast"
 
 export default function DashboardLayout({
   children,
@@ -20,7 +19,6 @@ export default function DashboardLayout({
             {children}
             </div>
         </div>
-          <Toaster />
       </SidebarProvider>
     </TooltipProvider>
   )

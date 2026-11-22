@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import type { MenuItem } from "@/types/menu"
 
 export function MenuCard({ item }: { item: MenuItem }) {
-  const href = `/browse-menu/${item._id}`
+  const href = `/menu/${item._id}`
 
   return (
     <article

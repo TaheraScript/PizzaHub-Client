@@ -2,8 +2,8 @@ import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import { MongoClient } from "mongodb"
 
-const client = new MongoClient(process.env.BETTER_AUTH_DB_URL as string)
-const db = client.db(process.env.BETTER_AUTH_DB_NAME ?? "pizzahub")
+const client = new MongoClient(process.env.MONGODB_URI as string)
+const db = client.db(process.env.MONGODB_DB_NAME ?? "pizzahub")
 
 export const auth = betterAuth({
      emailAndPassword: { 
@@ -14,13 +14,34 @@ export const auth = betterAuth({
               type: ['admin','vendor','customer'],
               input: true,
               defaultValue: 'customer'
-            } 
+            },
+          // Server-managed fields — never settable from the client (§12 / §22).
+          isBlocked: {
+              type: 'boolean',
+              input: false,
+              defaultValue: false
+            },
+          businessName: {
+              type: 'string',
+              input: true,
+              required: false
+            },
+          subscriptionPlan: {
+              type: ['free','premium'],
+              input: false,
+              defaultValue: 'free'
+            },
+          subscriptionExpiresAt: {
+              type: 'date',
+              input: false,
+              required: false
+            }
         }
     },
     socialProviders: {
         google: { 
-            clientId: (process.env.GOOGLE_CLIENT_ID ?? process.env.BETTER_AUTH_GOOGLE_CLIENT_ID) as string, 
-            clientSecret: (process.env.GOOGLE_CLIENT_SECRET ?? process.env.BETTER_AUTH_GOOGLE_SECRET) as string, 
+            clientId: process.env.GOOGLE_CLIENT_ID as string, 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
         }, 
     },
   database: mongodbAdapter(db, {

@@ -14,8 +14,7 @@ import { useSession } from "@/lib/auth-client"
 import { cn } from "@/lib/utils"
 import type { CreateOrderInput, MenuItem } from "@/types"
 import { useRouter } from "next/navigation"
-import { getOrderCount, orderMenu } from "@/lib/actions/order"
-import { getUserPremiumById } from "@/lib/api/user"
+import { orderMenu } from "@/lib/actions/order"
 
 const SIZE_CLASS =
   "h-12 w-full rounded-full text-base font-bold sm:w-auto sm:px-8"
@@ -34,22 +33,22 @@ export function OrderButton({ menuItems }: { menuItems: MenuItem }) {
 
   const handleOrderNow = async () => {
     if (!user) {
-      router.push(`/sign-in?redirectTo=/browse-menu/${menuItems._id}`)
+      router.push(`/sign-in?redirectTo=/menu/${menuItems._id}`)
       return
     }
 
-    else if (user.role == "customer") {
-      
-      const premiumResult = await getUserPremiumById(user.id) 
-      console.log("Premium Result:", premiumResult)
+    // Requirement: vendors cannot order their own items, admins cannot place orders.
+    if (user.role !== "customer") {
+      toast.error("Only customers can place orders")
+      return
+    }
 
-     const countResult = await getOrderCount(`customerId=${user.id}`)
-     if(!premiumResult?.premium && countResult.count >= 5){
-        router.push('/checkout')
-        return
-      }
-     else{
-      const order: CreateOrderInput = {
+    if (!deliveryDate || !deliveryAddress.trim()) {
+      toast.error("Add a delivery date and address to place your order")
+      return
+    }
+
+    const order: CreateOrderInput = {
       itemId: menuItems._id,
       customerId: user.id,
       customerName: user.name ?? undefined,
@@ -58,26 +57,24 @@ export function OrderButton({ menuItems }: { menuItems: MenuItem }) {
       deliveryAddress: deliveryAddress.trim(),
       message: message.trim() || undefined,
     }
-    const result = await orderMenu(order)
+
+    try {
+      const result = await orderMenu(order)
       if (result.insertedId) {
         toast.success("Order placed successfully")
         router.push("/dashboard/customer/orders")
       } else {
         toast.error("Could not place your order. Please try again.")
       }
-    } 
-     }
+    } catch (error) {
+      toast.error("Could not place your order", {
+        description:
+          error instanceof Error ? error.message : "Please try again.",
+      })
     }
-
-    if (!deliveryDate || !deliveryAddress.trim()) {
-      toast.error("Add a delivery date and address to place your order")
-      return
-    }
-
+  }
 
   const role = session?.user?.role
-
- 
 
   if (isPending) {
     return (
