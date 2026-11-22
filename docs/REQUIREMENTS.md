@@ -438,7 +438,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [ ] Custom 404 page
 
 ### Vendor
-- [ ] Dashboard layout (sidebar, role-based nav)
+- [x] Dashboard layout (sidebar, role-based nav)
 - [ ] Overview (stats + charts)
 - [ ] Add Menu Item (ImgBB upload, pending default, 3-item limit)
 - [ ] My Menu Items (list, update, delete, availability)
@@ -449,7 +449,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 ### Customer
 - [ ] Overview (stats + charts)
 - [ ] My Orders (details, cancel pending only)
-- [ ] Order form (date, address, message, duplicate prevention)
+- [x] Order form (date, address, message, duplicate prevention)
 - [ ] Profile Settings
 
 ### Admin

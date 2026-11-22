@@ -4,11 +4,11 @@
 
 PizzaHub is a full-stack pizza ordering and delivery platform that connects customers with local pizza restaurants. Customers can explore pizza menus, discover restaurants, and place delivery orders. Restaurant vendors can manage their restaurant profiles, publish menu items, and handle customer orders, while administrators manage users, review menu items, and monitor platform transactions.
 
-🔗 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app)
+🔗 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app/)
 
 ## 📸 Project Screenshot
 
-![PizzaHub Screenshot](./public/images/pizzahub-screenshot.png)
+![PizzaHub Screenshot](https://raw.githubusercontent.com/TaheraScript/PizzaHub-Client/main/public/images/pizzahub-screenshot.png)
 
 ## ✨ Key Features
 
@@ -60,7 +60,7 @@ Follow these steps to run the project locally.
 **1. Clone the repository**
 
 ```bash
-git clone YOUR_CLIENT_REPOSITORY_URL
+git clone https://github.com/TaheraScript/PizzaHub-Client.git
 ```
 
 **2. Navigate to the project directory**
@@ -160,9 +160,9 @@ Search, filtering, and sorting are handled through API query parameters to retri
 
 ## 🔗 Relevant Links
 
-- 🌐 **Live Demo:** [PizzaHub](YOUR_LIVE_WEBSITE_URL)
-- 💻 **Client Repository:** [PizzaHub Client](YOUR_CLIENT_REPOSITORY_URL)
-- ⚙️ **Server Repository:** [PizzaHub Server](YOUR_SERVER_REPOSITORY_URL)
+- 🌐 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app/)
+- 💻 **Client Repository:** [PizzaHub Client](https://github.com/TaheraScript/PizzaHub-Client)
+- ⚙️ **Server Repository:** [PizzaHub Server](https://github.com/TaheraScript/PizzaHub-Server)
 - ▲ **Next.js:** [nextjs.org](https://nextjs.org/)
 - ⚛️ **React:** [react.dev](https://react.dev/)
 - 📘 **TypeScript:** [typescriptlang.org](https://www.typescriptlang.org/)
@@ -176,4 +176,4 @@ Search, filtering, and sorting are handled through API query parameters to retri
 
 ---
 
-**Built with ❤️ to bring fresh pizza and great experiences together.**
+**Developed with ❤️ by Tahera Akter**
