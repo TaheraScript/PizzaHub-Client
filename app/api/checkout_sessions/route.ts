@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 
 import { stripe } from '@/lib/stripe'
+import { auth } from '@/lib/auth'
 
 export async function POST() {
+  const userSession = await auth.api.getSession({ headers: await headers() })
   try {
     const headersList = await headers()
     const origin =
@@ -14,6 +16,10 @@ export async function POST() {
     // Create Checkout Sessions from body params.
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      "customer_email": userSession?.user.email,
+      metadata:{
+        userId:userSession?.user.id
+      }
       line_items: [
         {
           // TODO: move this Price ID into STRIPE_PREMIUM_PRICE_ID in .env

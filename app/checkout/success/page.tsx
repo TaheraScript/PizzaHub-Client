@@ -5,7 +5,7 @@ import type { SearchParams } from '@/types'
 
 
 
-export default async function Success({
+export default async function CheckoutSuccessPage({
   searchParams,
 }: {
   searchParams: SearchParams
@@ -20,7 +20,8 @@ export default async function Success({
 
   const {
     status,
-    customer_details
+    customer_details,
+    payment_status
   } = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ['line_items', 'payment_intent']
   })
@@ -29,7 +30,7 @@ export default async function Success({
     return redirect('/')
   }
 
-  if (status === 'complete') {
+  if (status === 'complete' && payment_status === 'paid') {
     return (
       <section id="success">
         <p>
