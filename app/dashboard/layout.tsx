@@ -1,12 +1,15 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { requireSession } from "@/lib/core/server"
 import { DashboardSidebar } from "../components/dashboard/DashboardSidebar"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  await requireSession()
+
   return (
     <TooltipProvider>
       <SidebarProvider>

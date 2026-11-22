@@ -3,7 +3,7 @@ import React from 'react';
 
 const VendorDashboardLayout = async({children}:{children: React.ReactNode}) => {
     
-    await requireRole('recruiter');
+    await requireRole('vendor');
     return children;
 
 };

@@ -420,7 +420,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Sign Up page (role select, validation, image upload)
 - [x] Sign In page
 - [ ] Admin role assignment (secure, no public admin signup)
-- [ ] Session/role middleware on client
+- [x] Session/role middleware on client — server-side `requireSession`/`requireRole` in dashboard layouts (unauth → Sign In, wrong role / blocked → unauthorized)
 - [ ] JWT middleware + role middleware on server
 - [ ] Route protection for dashboards (client + server)
 - [x] Navbar reactive to auth state
