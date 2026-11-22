@@ -11,6 +11,8 @@ export type MenuItem = {
   price: number
   location: string
   image?: MenuItemImage
+  /** Optional gallery; falls back to `image` when absent. */
+  images?: string[]
   status: MenuItemStatus
   vendorId?: string
   vendorName?: string

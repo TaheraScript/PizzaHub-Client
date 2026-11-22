@@ -431,10 +431,10 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Home: featured items (6+, approved + active)
 - [x] Home: categories section
 - [x] Home: Why Choose PizzaHub?
-- [ ] Home: second extra section
-- [ ] Home: Motion animations
+- [x] Home: second extra section — "How PizzaHub Works" (3-step)
+- [x] Home: Motion animations (framer-motion, reduced-motion aware)
 - [x] Browse Menu (search, category + location filter, loading/empty)
-- [ ] Item Details `/menu/[id]` (multi-image, error states)
+- [x] Item Details `/menu/[id]` (multi-image, error states) — gallery + Order option; legacy `/browse-menu/[id]` redirects here
 - [ ] Custom 404 page
 
 ### Vendor

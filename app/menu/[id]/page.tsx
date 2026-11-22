@@ -1,18 +1,52 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
-import { ArrowLeft, MapPin, Store } from "lucide-react"
+import { ArrowLeft, MapPin, Store, Tag, XCircle, type LucideIcon } from "lucide-react"
 
-import { MenuImage } from "@/components/menu/menu-image"
+import { EmptyState } from "@/components/dashboard/empty-state"
+import { MenuGallery } from "@/components/menu/menu-gallery"
+import { OrderButton } from "@/components/menu/order-button"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { cardClass } from "@/components/ui/card"
 import { PageContainer } from "@/components/ui/page-container"
 import { getMenuItem } from "@/lib/api/menu"
 import { requireSession } from "@/lib/core/server"
+import { cn } from "@/lib/utils"
 import type { MenuItem } from "@/types"
 
 type MenuItemPageProps = {
   params: Promise<{ id: string }>
+}
+
+function toImages(item: MenuItem): string[] {
+  if (item.images?.length) return item.images
+  if (typeof item.image === "string" && item.image.trim()) return [item.image]
+  if (item.image && typeof item.image === "object" && item.image.url) {
+    return [item.image.url]
+  }
+  return []
+}
+
+function DetailRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 px-4 py-3.5">
+      <dt className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+        <Icon className="size-4 shrink-0" />
+        {label}
+      </dt>
+      <dd className="truncate text-sm font-semibold text-foreground">
+        {value}
+      </dd>
+    </div>
+  )
 }
 
 export async function generateMetadata({
@@ -23,23 +57,45 @@ export async function generateMetadata({
     const item = await getMenuItem(id)
     return { title: item.itemName, description: item.description }
   } catch {
-    return { title: "Menu item" }
+    return { title: "Item details" }
   }
 }
 
 export default async function MenuItemPage({ params }: MenuItemPageProps) {
+  // Item details require a signed-in user (§4/§7).
   await requireSession()
 
   const { id } = await params
 
-  let item: MenuItem
+  let item: MenuItem | null = null
   try {
     item = await getMenuItem(id)
   } catch {
-    notFound()
+    item = null
   }
 
-  if (item.status !== "approved") notFound()
+  // Invalid id, missing record, or not approved → appropriate error state.
+  if (!item || item.status !== "approved") {
+    return (
+      <PageContainer>
+        <EmptyState
+          icon={XCircle}
+          title="Item not available"
+          description="This item doesn't exist, or it's no longer on the menu. It may have been removed, sold out, or is still awaiting approval."
+          action={
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/browse-menu" />}
+            >
+              <ArrowLeft />
+              Back to menu
+            </Button>
+          }
+        />
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer>
@@ -53,46 +109,63 @@ export default async function MenuItemPage({ params }: MenuItemPageProps) {
         Back to menu
       </Button>
 
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
-          <MenuImage
-            src={item.image}
-            alt={item.itemName}
-            sizes="(min-width: 1024px) 50vw, 100vw"
-          />
-        </div>
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-12">
+        <MenuGallery images={toImages(item)} alt={item.itemName} />
 
         <div className="flex flex-col">
-          <Badge>{item.category}</Badge>
+          <Badge size="md" className="self-start">
+            <Tag className="size-3.5" />
+            {item.category}
+          </Badge>
 
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-balance text-foreground sm:text-4xl">
             {item.itemName}
           </h1>
 
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="size-4 shrink-0" />
+              {item.location}
+            </span>
+            {item.vendorName ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Store className="size-4 shrink-0" />
+                {item.vendorName}
+              </span>
+            ) : null}
+          </div>
+
+          <p className="mt-5 text-base leading-relaxed text-pretty text-muted-foreground">
             {item.description}
           </p>
 
-          <dl className="mt-6 flex flex-col gap-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <MapPin className="size-4 shrink-0" />
-              <dt className="sr-only">Area</dt>
-              <dd>{item.location}</dd>
-            </div>
-            {item.vendorName ? (
-              <div className="flex items-center gap-2">
-                <Store className="size-4 shrink-0" />
-                <dt className="sr-only">Vendor</dt>
-                <dd>{item.vendorName}</dd>
-              </div>
-            ) : null}
-          </dl>
+          <div className="mt-6 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+              ${Number(item.price).toFixed(2)}
+            </span>
+            <span className="text-sm text-muted-foreground">per item</span>
+          </div>
 
-          <p className="mt-8 text-3xl font-extrabold tracking-tight text-foreground">
-            ${Number(item.price).toFixed(2)}
-          </p>
+          <div className="mt-6">
+            <OrderButton menuItems={item} />
+          </div>
         </div>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-bold tracking-tight text-foreground">
+          Item details
+        </h2>
+        <dl className={cn(cardClass, "mt-4 divide-y divide-border")}>
+          <DetailRow icon={Tag} label="Category" value={item.category} />
+          <DetailRow icon={MapPin} label="Area" value={item.location} />
+          <DetailRow
+            icon={Store}
+            label="Vendor"
+            value={item.vendorName ?? "PizzaHub vendor"}
+          />
+        </dl>
+      </section>
     </PageContainer>
   )
 }

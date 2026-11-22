@@ -4,7 +4,7 @@
 
 PizzaHub is a full-stack pizza ordering and delivery platform that connects customers with local pizza restaurants. Customers can explore pizza menus, discover restaurants, and place delivery orders. Restaurant vendors can manage their restaurant profiles, publish menu items, and handle customer orders, while administrators manage users, review menu items, and monitor platform transactions.
 
-🔗 **Live Demo:** [PizzaHub](YOUR_LIVE_WEBSITE_URL)
+🔗 **Live Demo:** [PizzaHub](https://pizzahub-client-rust.vercel.app)
 
 ## 📸 Project Screenshot
 

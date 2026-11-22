@@ -1,5 +1,6 @@
 import { Bike, Flame, ShieldCheck, Store, type LucideIcon } from "lucide-react"
 
+import { Reveal } from "@/components/shared/reveal"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { cardClass } from "@/components/ui/card"
 import { PageContainer } from "@/components/ui/page-container"
@@ -44,23 +45,25 @@ export function WhyChooseUs() {
         />
 
         <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {BENEFITS.map(({ icon: Icon, title, description }) => (
-            <li
-              key={title}
-              className={cn(
-                cardClass,
-                "flex h-full flex-col items-center gap-3 p-6 text-center"
-              )}
-            >
-              <span className="grid size-12 place-items-center rounded-full bg-brand-orange/10 text-brand-orange">
-                <Icon className="size-6" />
-              </span>
-              <h3 className="text-base font-bold tracking-tight text-foreground">
-                {title}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {description}
-              </p>
+          {BENEFITS.map(({ icon: Icon, title, description }, index) => (
+            <li key={title} className="h-full">
+              <Reveal
+                delay={index * 0.06}
+                className={cn(
+                  cardClass,
+                  "flex h-full flex-col items-center gap-3 p-6 text-center"
+                )}
+              >
+                <span className="grid size-12 place-items-center rounded-full bg-brand-orange/10 text-brand-orange">
+                  <Icon className="size-6" />
+                </span>
+                <h3 className="text-base font-bold tracking-tight text-foreground">
+                  {title}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {description}
+                </p>
+              </Reveal>
             </li>
           ))}
         </ul>

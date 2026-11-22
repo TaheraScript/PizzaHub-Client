@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import { Reveal } from "@/components/shared/reveal"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { Button } from "@/components/ui/button"
 import { cardClass } from "@/components/ui/card"
@@ -47,25 +48,27 @@ export function HowItWorks() {
 
         <ol className="mt-8 grid gap-5 md:grid-cols-3">
           {STEPS.map(({ icon: Icon, title, description }, index) => (
-            <li
-              key={title}
-              className={cn(
-                cardClass,
-                "flex h-full flex-col gap-3 p-6 text-center sm:text-left"
-              )}
-            >
-              <span className="mx-auto grid size-12 place-items-center rounded-full bg-brand-orange/10 text-brand-orange sm:mx-0">
-                <Icon className="size-6" />
-              </span>
-              <span className="text-xs font-bold tracking-wider text-brand-orange uppercase">
-                Step {index + 1}
-              </span>
-              <h3 className="text-base font-bold tracking-tight text-foreground">
-                {title}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {description}
-              </p>
+            <li key={title} className="h-full">
+              <Reveal
+                delay={index * 0.08}
+                className={cn(
+                  cardClass,
+                  "flex h-full flex-col gap-3 p-6 text-center sm:text-left"
+                )}
+              >
+                <span className="mx-auto grid size-12 place-items-center rounded-full bg-brand-orange/10 text-brand-orange sm:mx-0">
+                  <Icon className="size-6" />
+                </span>
+                <span className="text-xs font-bold tracking-wider text-brand-orange uppercase">
+                  Step {index + 1}
+                </span>
+                <h3 className="text-base font-bold tracking-tight text-foreground">
+                  {title}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {description}
+                </p>
+              </Reveal>
             </li>
           ))}
         </ol>

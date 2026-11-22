@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/dashboard/empty-state"
 import { MenuCard } from "@/components/menu/menu-card"
 import { MenuCardSkeleton } from "@/components/menu/menu-card-skeleton"
 import { ErrorState } from "@/components/shared/error-state"
+import { Reveal } from "@/components/shared/reveal"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { Button } from "@/components/ui/button"
 import { PageContainer } from "@/components/ui/page-container"
@@ -41,8 +42,10 @@ async function FeaturedGrid() {
 
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {featured.map((item) => (
-        <MenuCard key={item._id} item={item} />
+      {featured.map((item, index) => (
+        <Reveal key={item._id} delay={index * 0.06} className="h-full">
+          <MenuCard item={item} />
+        </Reveal>
       ))}
     </div>
   )
