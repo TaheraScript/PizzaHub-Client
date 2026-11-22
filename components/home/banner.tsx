@@ -3,7 +3,9 @@ import Link from "next/link"
 import { ArrowRight, Sparkles } from "lucide-react"
 
 import pizza from "@/app/images/hero-pizza.jpg"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { PageContainer } from "@/components/ui/page-container"
 
 const stats = [
   { value: "500+", label: "Local pizza vendors" },
@@ -14,12 +16,12 @@ const stats = [
 export function Banner() {
   return (
     <section className="bg-gradient-to-b from-secondary/60 to-background">
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:gap-14 lg:px-8">
+      <PageContainer className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-2 lg:gap-14">
         <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-orange/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-brand-orange sm:text-sm">
+          <Badge size="md">
             <Sparkles className="size-3.5 sm:size-4" />
             Pizza ordering &amp; delivery platform
-          </span>
+          </Badge>
 
           <h1 className="mt-5 text-4xl leading-[1.05] font-extrabold tracking-tight text-balance text-foreground sm:text-5xl lg:text-6xl">
             Hot &amp; Fresh Pizza
@@ -38,7 +40,7 @@ export function Banner() {
               size="lg"
               className="h-12 w-full rounded-full bg-brand-orange px-7 text-base font-bold text-white shadow-sm hover:bg-brand-orange/90 sm:w-auto"
               nativeButton={false}
-              render={<Link href="/menu" />}
+              render={<Link href="/browse-menu" />}
             >
               Explore Pizza Menu
               <ArrowRight className="transition-transform group-hover/button:translate-x-0.5" />
@@ -83,7 +85,7 @@ export function Banner() {
             />
           </div>
         </div>
-      </div>
+      </PageContainer>
     </section>
   )
 }

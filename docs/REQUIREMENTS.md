@@ -433,7 +433,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [ ] Home: Why Choose PizzaHub?
 - [ ] Home: second extra section
 - [ ] Home: Motion animations
-- [ ] Browse Menu (search, category + location filter, loading/empty)
+- [x] Browse Menu (search, category + location filter, loading/empty)
 - [ ] Item Details `/menu/[id]` (multi-image, error states)
 - [ ] Custom 404 page
 
@@ -465,7 +465,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [ ] Subscription expiry handling
 
 ### Challenge / Optional
-- [ ] Advanced search + price sorting (asc/desc)
+- [x] Advanced search + price sorting (asc/desc)
 - [ ] JWT verification hardened (invalid/expired rejection)
 - [ ] Optional feature #1: ______
 - [ ] Optional feature #2: ______

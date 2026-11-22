@@ -1,6 +1,5 @@
 "use client"
 
-import Image, { type StaticImageData } from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import {
@@ -16,24 +15,13 @@ import {
 import { toast } from "sonner"
 
 import { PageHeader } from "@/components/dashboard/page-header"
+import { MenuImage } from "@/components/menu/menu-image"
 import { Button } from "@/components/ui/button"
+import { cardClass } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { getMenu } from "@/lib/api/menu"
 import { DeleteMenuDialog } from "@/components/DeleteMenuDialog"
-
-type MenuItemStatus = "pending" | "approved" | "rejected" | "inactive"
-
-// Mirrors what the "Add menu item" form collects, plus the server fields.
-type MenuItem = {
-  _id: string
-  itemName: string
-  category: string
-  description: string
-  price: number
-  location: string
-  image: StaticImageData | string
-  status: MenuItemStatus
-}
+import type { MenuItem, MenuItemStatus } from "@/types/menu"
 
 const STATUS: Record<
   MenuItemStatus,
@@ -63,21 +51,18 @@ function MenuItemCard({
   const status = STATUS[item.status]
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="relative aspect-4/3 overflow-hidden">
-        {typeof item.image === "string" && item.image.length > 0 ? (
-          <Image
-            src={item.image}
-            alt={item.itemName}
-            fill
-            sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-muted text-sm font-medium text-muted-foreground">
-            No image
-          </div>
-        )}
+    <article
+      className={cn(
+        cardClass,
+        "group flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      )}
+    >
+      <div className="relative aspect-4/3 overflow-hidden bg-muted">
+        <MenuImage
+          src={item.image}
+          alt={item.itemName}
+          sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+        />
         <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm ring-1 ring-border backdrop-blur">
           <status.icon className={cn("size-3.5", status.iconClass)} />
           {status.label}

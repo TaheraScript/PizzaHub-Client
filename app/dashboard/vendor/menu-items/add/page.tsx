@@ -6,20 +6,15 @@ import type { ChangeEvent, FormEvent } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import { cardClass } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { createMenu } from "@/lib/actions/menu-items"
+import { MENU_CATEGORIES } from "@/lib/constants/menu"
+import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-
-const CATEGORIES = [
-  "Classic Pizzas",
-  "Vegetarian Pizzas",
-  "Meat Lovers",
-  "Specialty / Gourmet Pizzas",
-  "Sides & Appetizers",
-  "Beverages & Desserts",
-]
 
 const EMPTY_FORM = {
   itemName: "",
@@ -81,7 +76,7 @@ export default function AddMenuItemPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-6 shadow-sm"
+        className={cn(cardClass, "flex flex-col gap-5 p-6")}
       >
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="itemName">
@@ -102,23 +97,22 @@ export default function AddMenuItemPage() {
             <Label htmlFor="category">
               Category <span className="text-destructive">*</span>
             </Label>
-            <select
+            <Select
               id="category"
               name="category"
               value={form.category}
               onChange={(event) => updateField("category", event.target.value)}
               required
-              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-base outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 sm:text-sm"
             >
               <option value="" disabled>
                 Select a category
               </option>
-              {CATEGORIES.map((category) => (
+              {MENU_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="flex flex-col gap-1.5">
