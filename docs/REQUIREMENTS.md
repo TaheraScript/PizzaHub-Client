@@ -472,8 +472,8 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 
 ### Ship
 - [x] README complete (incl. challenge implementation notes + env var names)
-- [ ] Client 20+ meaningful commits
-- [ ] Server 12+ meaningful commits
+- [x] Client 20+ meaningful commits (33)
+- [x] Server 12+ meaningful commits (14)
 - [ ] Production deploy verified (no reload/CORS/webhook errors)
 
 ---
