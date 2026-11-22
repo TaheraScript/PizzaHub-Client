@@ -8,13 +8,21 @@ import { cn } from "@/lib/utils"
 import type { MenuItem } from "@/types/menu"
 
 export function MenuCard({ item }: { item: MenuItem }) {
+  const href = `/browse-menu/${item._id}`
+
   return (
     <article
       className={cn(
         cardClass,
-        "group flex h-full flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+        "group relative flex h-full flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-within:border-brand-orange focus-within:ring-3 focus-within:ring-ring/40"
       )}
     >
+      <Link
+        href={href}
+        aria-label={`View details for ${item.itemName}`}
+        className="absolute inset-0 z-10 rounded-2xl"
+      />
+
       <div className="relative aspect-4/3 overflow-hidden bg-muted">
         <MenuImage src={item.image} alt={item.itemName} />
       </div>
@@ -51,9 +59,9 @@ export function MenuCard({ item }: { item: MenuItem }) {
           </span>
           <Button
             size="sm"
-            nativeButton={false}
-            className="h-9 rounded-full px-4 font-semibold"
-            render={<Link href={`/menu/${item._id}`} />}
+            aria-hidden="true"
+            tabIndex={-1}
+            className="pointer-events-none h-9 rounded-full px-4 font-semibold transition-colors group-hover:bg-primary/80"
           >
             View details
             <ArrowRight />

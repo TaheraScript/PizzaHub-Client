@@ -2,8 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense, useState } from "react"
 import type { FormEvent } from "react"
 import { toast } from "sonner"
 
@@ -43,7 +43,9 @@ function GoogleIcon() {
   )
 }
 
-export default function SignInPage() {
+function SignInForm() {
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirectTo") ?? "/"
   const [form, setForm] = useState<SignInForm>({
     email: "",
     password: "",
@@ -61,7 +63,7 @@ export default function SignInPage() {
       email: form.email,
       password: form.password,
       rememberMe: true,
-      callbackURL: "/",
+      callbackURL: redirectTo,
     })
 
     if (error) {
@@ -187,5 +189,21 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function SignInFallback() {
+  return (
+    <div className="flex min-h-[calc(100svh-4rem)] items-center justify-center bg-gradient-to-br from-background via-background to-secondary p-4 sm:p-6">
+      <div className="h-[30rem] w-full max-w-md animate-pulse rounded-3xl border border-border bg-card shadow-xl sm:max-w-lg lg:max-w-5xl" />
+    </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<SignInFallback />}>
+      <SignInForm />
+    </Suspense>
   )
 }

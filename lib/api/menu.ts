@@ -13,6 +13,11 @@ async function request<T>(path: string): Promise<T> {
   return res.json()
 }
 
+export const getMenuById=async(menuId: string)=>{
+const res = await fetch(`${BASE_URL}/menu-item/${menuId}`)
+return res.json()
+}
+
 export const getMenu = async (query = ""): Promise<MenuItem[]> => {
   const search = query ? `?${query}` : ""
   return request<MenuItem[]>(`/menu-items${search}`)
