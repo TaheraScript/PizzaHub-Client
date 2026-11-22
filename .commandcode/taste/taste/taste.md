@@ -8,3 +8,4 @@
 - Expects refactors and improvements to be non-breaking and additive — wants a step-by-step plan (each step standing on its own) rather than changes that alter existing exports or behavior. Confidence: 0.75
 - Keeps project requirements in a `docs/` folder and expects the assistant to read those specs up front, before implementing any feature, so it has the full picture. Confidence: 0.7
 - Separates UI work from data wiring: wants the interface implemented now with placeholder/dummy data (marked as such) and will hook up the real data source later. Confidence: 0.6
+- Prefers Next.js App Router pages to be Server Components — reads the session server-side (`auth.api.getSession` + `headers()`) and does the data fetch on the server, pushing interactivity into child client components — rather than making the page a client component with `useSession`/`useEffect`. Confidence: 0.65

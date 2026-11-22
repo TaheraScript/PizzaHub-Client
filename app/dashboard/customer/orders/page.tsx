@@ -1,5 +1,12 @@
+import { headers } from "next/headers"
 import Link from "next/link"
-import { CalendarClock, MapPin, MessageSquare, Package } from "lucide-react"
+import {
+  CalendarClock,
+  MapPin,
+  MessageSquare,
+  Package,
+  ServerCrash,
+} from "lucide-react"
 
 import { EmptyState } from "@/components/dashboard/empty-state"
 import { PageHeader } from "@/components/dashboard/page-header"
@@ -8,78 +15,10 @@ import { CancelOrderButton } from "@/components/orders/cancel-order-button"
 import { OrderStatusBadge } from "@/components/orders/order-status-badge"
 import { Button } from "@/components/ui/button"
 import { cardClass } from "@/components/ui/card"
+import { getOrder } from "@/lib/actions/order"
+import { auth } from "@/lib/auth"
 import { cn } from "@/lib/utils"
 import type { Order } from "@/types"
-
-// TODO: replace with a real fetch once the orders API + session auth are wired:
-//   const orders = await getOrders({ customerId: session.user.id })
-// See docs/REQUIREMENTS.md §9 and §13.
-const dummyOrders: Order[] = [
-  {
-    _id: "ord_1001",
-    itemId: "1",
-    vendorId: "ven_01",
-    customerId: "cus_01",
-    itemName: "Pepperoni Feast",
-    price: 14.5,
-    vendorName: "Bella Italia",
-    customerName: "Fatema",
-    customerEmail: "fatema@example.com",
-    deliveryDate: "2026-11-28",
-    deliveryAddress: "12 Gulshan Avenue, Dhaka",
-    message: "Extra cheese please, and ring the bell twice.",
-    status: "pending",
-    createdAt: "2026-11-20T10:15:00.000Z",
-  },
-  {
-    _id: "ord_1002",
-    itemId: "7",
-    vendorId: "ven_02",
-    customerId: "cus_01",
-    itemName: "Garlic Bread with Cheese",
-    price: 6.25,
-    vendorName: "Slice House",
-    customerName: "Fatema",
-    customerEmail: "fatema@example.com",
-    deliveryDate: "2026-11-25",
-    deliveryAddress: "12 Gulshan Avenue, Dhaka",
-    message: null,
-    status: "accepted",
-    createdAt: "2026-11-19T18:40:00.000Z",
-  },
-  {
-    _id: "ord_1003",
-    itemId: "12",
-    vendorId: "ven_03",
-    customerId: "cus_01",
-    itemName: "Veggie Supreme",
-    price: 12.0,
-    vendorName: "Green Slice",
-    customerName: "Fatema",
-    customerEmail: "fatema@example.com",
-    deliveryDate: "2026-11-18",
-    deliveryAddress: "Flat 4B, Dhanmondi 27, Dhaka",
-    message: "No olives.",
-    status: "rejected",
-    createdAt: "2026-11-15T09:05:00.000Z",
-  },
-  {
-    _id: "ord_1004",
-    itemId: "3",
-    vendorId: "ven_01",
-    customerId: "cus_01",
-    itemName: "BBQ Chicken Pizza",
-    price: 16.75,
-    vendorName: "Bella Italia",
-    customerName: "Fatema",
-    customerEmail: "fatema@example.com",
-    deliveryDate: "2026-11-12",
-    deliveryAddress: "12 Gulshan Avenue, Dhaka",
-    message: null,
-    status: "cancelled",
-    createdAt: "2026-11-10T13:30:00.000Z",
-  },
-]
 
 const formatDate = (value: string) => {
   const date = new Date(value.length === 10 ? `${value}T00:00:00` : value)
@@ -92,7 +31,9 @@ const formatDate = (value: string) => {
 
 function OrderCard({ order }: { order: Order }) {
   return (
-    <article className={cn(cardClass, "flex flex-col gap-4 p-4 sm:flex-row sm:gap-5")}>
+    <article
+      className={cn(cardClass, "flex flex-col gap-4 p-4 sm:flex-row sm:gap-5")}
+    >
       <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-xl bg-muted sm:h-28 sm:w-28">
         <MenuImage
           src={order.itemImage}
@@ -161,8 +102,20 @@ function OrderCard({ order }: { order: Order }) {
   )
 }
 
-export default function CustomerOrdersPage() {
-  const orders = dummyOrders
+export default async function CustomerOrdersPage() {
+  const session = await auth.api.getSession({ headers: await headers() })
+  const userId = session?.user?.id
+
+  let orders: Order[] = []
+  let failed = false
+
+  if (userId) {
+    try {
+      orders = await getOrder(`customerId=${encodeURIComponent(userId)}`)
+    } catch {
+      failed = true
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -171,7 +124,29 @@ export default function CustomerOrdersPage() {
         description="Track every order you've placed and cancel the ones still pending."
       />
 
-      {orders.length === 0 ? (
+      {!userId ? (
+        <EmptyState
+          icon={Package}
+          title="Sign in to see your orders"
+          description="You need to be signed in to view your order history."
+          action={
+            <Button
+              nativeButton={false}
+              render={
+                <Link href="/sign-in?redirectTo=/dashboard/customer/orders" />
+              }
+            >
+              Sign in
+            </Button>
+          }
+        />
+      ) : failed ? (
+        <EmptyState
+          icon={ServerCrash}
+          title="Could not load your orders"
+          description="Something went wrong while fetching your orders. Please refresh the page and try again."
+        />
+      ) : orders.length === 0 ? (
         <EmptyState
           icon={Package}
           title="No orders yet"
