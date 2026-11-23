@@ -2,16 +2,19 @@ import { notFound } from "next/navigation"
 
 import { EditMenuItemForm } from "./edit-form"
 import { getMyMenuItems } from "@/lib/api/vendor"
-import type { MenuItemImage } from "@/types/menu"
+import type { MenuItem } from "@/types/menu"
 
 type EditMenuItemPageProps = {
   params: Promise<{ id: string }>
 }
 
-function toImageUrl(image: MenuItemImage | undefined): string | null {
-  if (typeof image === "string") return image
-  if (image && typeof image === "object" && image.url) return image.url
-  return null
+function toImages(item: MenuItem): string[] {
+  if (item.images?.length) return item.images
+  if (typeof item.image === "string" && item.image.trim()) return [item.image]
+  if (item.image && typeof item.image === "object" && item.image.url) {
+    return [item.image.url]
+  }
+  return []
 }
 
 export default async function EditMenuItemPage({
@@ -48,7 +51,7 @@ export default async function EditMenuItemPage({
           price: String(item.price),
           location: item.location,
         }}
-        currentImageUrl={toImageUrl(item.image)}
+        currentImages={toImages(item)}
       />
     </div>
   )

@@ -12,18 +12,18 @@ import { updateMenuItem } from "@/lib/actions/menu-items"
 export function EditMenuItemForm({
   itemId,
   defaultValues,
-  currentImageUrl,
+  currentImages,
 }: {
   itemId: string
   defaultValues: MenuItemFormValues
-  currentImageUrl: string | null
+  currentImages: string[]
 }) {
   const router = useRouter()
 
   return (
     <MenuItemForm
       defaultValues={defaultValues}
-      currentImageUrl={currentImageUrl}
+      currentImages={currentImages}
       submitLabel="Save changes"
       cancelHref="/dashboard/vendor/menu-items"
       onSubmit={async (values) => {
