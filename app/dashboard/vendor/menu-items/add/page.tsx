@@ -26,7 +26,26 @@ export default function AddMenuItemPage() {
         submittingLabel="Adding…"
         cancelHref="/dashboard/vendor/menu-items"
         onSubmit={async (values) => {
-          await createMenu(values)
+          const result = await createMenu(values)
+
+          if (!result.ok) {
+            // Free-plan item limit → prompt to upgrade instead of an error.
+            if (/premium|3 active items/i.test(result.error)) {
+              toast.error("Free plan limit reached", {
+                description:
+                  "The Free plan allows up to 3 active items. Upgrade to Premium for unlimited menu items.",
+                action: {
+                  label: "Upgrade",
+                  onClick: () =>
+                    router.push("/dashboard/vendor/subscription"),
+                },
+              })
+            } else {
+              toast.error(result.error)
+            }
+            return
+          }
+
           toast.success("Menu item added and sent for review.")
           router.push("/dashboard/vendor/menu-items")
         }}

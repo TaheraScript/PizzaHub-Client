@@ -6,23 +6,30 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 // add menu item(vendor) — sends the vendor's JWT; the server assigns vendorId
 // and the default "pending" status.
-export const createMenu = async (data: unknown) => {
+// Returns a result instead of throwing so expected failures (e.g. the free-plan
+// item limit) become a normal toast on the client, not a server error.
+export const createMenu = async (
+  data: unknown
+): Promise<{ ok: true } | { ok: false; error: string }> => {
   const token = await getToken()
   const res = await fetch(`${BASE_URL}/menu-items`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
+      "content-type": "application/json",
       authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   })
 
-  const body = await res.json().catch(() => ({}))
   if (!res.ok) {
-    throw new Error(body?.message || `Failed to add menu item (${res.status})`)
+    const body = await res.json().catch(() => ({}))
+    return {
+      ok: false,
+      error: body?.message || `Could not add menu item (${res.status})`,
+    }
   }
 
-  return body
+  return { ok: true }
 }
 
 // update one of the vendor's own items (fields and/or availability status)
