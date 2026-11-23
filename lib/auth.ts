@@ -1,10 +1,10 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import { jwt } from "better-auth/plugins"
-import { MongoClient } from "mongodb"
 
-const client = new MongoClient(process.env.MONGODB_URI as string)
-const db = client.db(process.env.MONGODB_DB_NAME ?? "pizzahub")
+import { mongoClient } from "./db"
+
+const db = mongoClient.db(process.env.MONGODB_DB_NAME ?? "pizzahub")
 
 export const auth = betterAuth({
      emailAndPassword: { 
@@ -48,7 +48,7 @@ export const auth = betterAuth({
         }, 
     },
   database: mongodbAdapter(db, {
-    client,
+    client: mongoClient,
   }),
   plugins: [
     // Issue JWKS-verifiable JWTs so the Express API can authenticate requests
