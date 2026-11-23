@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
+import { jwt } from "better-auth/plugins"
 import { MongoClient } from "mongodb"
 
 const client = new MongoClient(process.env.MONGODB_URI as string)
@@ -49,6 +50,22 @@ export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
   }),
+  plugins: [
+    // Issue JWKS-verifiable JWTs so the Express API can authenticate requests
+    // without a shared secret. Public keys are served at /api/auth/jwks and a
+    // token for the current session at /api/auth/token. Only non-sensitive
+    // claims are put in the token (the API reloads the user for authoritative
+    // role/blocked state, so nothing here is trusted).
+    jwt({
+      jwt: {
+        definePayload: ({ user }) => ({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        }),
+      },
+    }),
+  ],
   databaseHooks: {
     user: {
       create: {

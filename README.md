@@ -61,9 +61,6 @@ MONGODB_DB_NAME=pizzahub
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# JWT — must match the Express server's JWT_SECRET
-JWT_SECRET=
-
 # Express API
 NEXT_PUBLIC_API_URL=http://localhost:5000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -107,8 +104,7 @@ PORT=5000
 NODE_ENV=development
 MONGODB_URI=
 MONGODB_DB_NAME=pizzahub
-BETTER_AUTH_SECRET=        # must match the client
-JWT_SECRET=                # must match the client
+JWKS_URL=http://localhost:3000/api/auth/jwks
 CLIENT_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -147,7 +143,7 @@ IMGBB_API_KEY=
 `/browse-menu` writes `search`, `category`, `location`, `sort` to the URL. The server's `GET /menu-items` builds the Mongo query: case-insensitive regex on name, exact category/location, a `status: approved` guard, and `sort=price-asc|price-desc` → `{ price: ±1 }`.
 
 **2. JWT / token verification (Express middleware flow)**
-The client signs a short-lived (1h) HS256 JWT with `JWT_SECRET` in `getToken()` and sends it as `Authorization: Bearer`. The Express server's `requireAuth` verifies signature + expiry with `jose` (`401` if invalid/expired), reloads the user from the DB for an authoritative role/blocked state, then `requireRole(...)` enforces roles (`403`). Ownership is checked before any update/delete.
+The client's `getToken()` requests a short-lived JWT from Better Auth (`/api/auth/token`); it is signed with Better Auth's asymmetric key (EdDSA) and sent as `Authorization: Bearer`. The Express server's `requireAuth` verifies the signature + expiry against the client's JWKS (`/api/auth/jwks`) with `jose` (`401` if invalid/expired), reloads the user from the DB for an authoritative role/blocked state, then `requireRole(...)` enforces roles (`403`). Ownership is checked before any update/delete.
 
 ## 🔐 Security Notes
 

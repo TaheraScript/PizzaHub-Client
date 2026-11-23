@@ -1,10 +1,7 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { SignJWT } from "jose"
 
 import { auth } from "../auth"
-
-const jwtKey = new TextEncoder().encode(process.env.JWT_SECRET ?? "")
 
 export const getSession = async()=>{
     'use server'
@@ -49,21 +46,15 @@ export const requireRole = async (role: string) => {
     return session
 }
 export const getToken = async () => {
-    const session = await getSession()
+    const requestHeaders = await headers()
+    const session = await auth.api.getSession({ headers: requestHeaders })
     if (!session || !session.user) {
         redirect("/sign-in")
     }
-    if (!process.env.JWT_SECRET) {
-        throw new Error("JWT_SECRET is not set")
-    }
-    // Short-lived JWT sent as a Bearer token to the Express API, which verifies
-    // the signature + expiry and reloads the user for an authoritative role.
-    return await new SignJWT({ role: session.user.role, email: session.user.email })
-        .setProtectedHeader({ alg: "HS256" })
-        .setSubject(session.user.id)
-        .setIssuedAt()
-        .setExpirationTime("1h")
-        .sign(jwtKey)
+    // Better Auth mints a short-lived JWT (subject = user id, signed with its
+    // asymmetric key). The Express API verifies it against /api/auth/jwks.
+    const { token } = await auth.api.getToken({ headers: requestHeaders })
+    return token
 }
 
 export const authFetch = async(api : string) => {
