@@ -10,6 +10,11 @@ PizzaHub is a full-stack, role-based pizza ordering and delivery platform that c
 
 > **Note:** This repo is the **Next.js client**. The Express + MongoDB API lives in the separate server repo. Refer to each repo's README for its own setup.
 
+## 📸 Project Screenshot
+
+![Pizzahub Screenshot](./public/images/pizzahub-homepage.png)
+
+
 ## ✨ Key Features
 
 1. **Authentication & roles** — Email/password + Google via Better Auth; JWT-based API auth; Customer / Vendor / Admin role-based access (verified server-side, not just hidden links).
@@ -50,29 +55,33 @@ Create `.env.local` (copy from `.env.example`):
 
 ```env
 # Better Auth
-BETTER_AUTH_SECRET=
+BETTER_AUTH_SECRET=your-better-auth-secret
 BETTER_AUTH_URL=http://localhost:3000
 
-# MongoDB (Better Auth adapter + business data)
-MONGODB_URI=
+# MongoDB
+MONGODB_URI=your-mongodb-connection-string
 MONGODB_DB_NAME=pizzahub
 
 # Google OAuth
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# JWT
+JWT_SECRET=your-jwt-secret
 
 # Express API
 NEXT_PUBLIC_API_URL=http://localhost:5000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Stripe (vendor subscription only)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_PREMIUM_PRICE_ID=
-STRIPE_WEBHOOK_SECRET=
+# Stripe
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+STRIPE_SECRET_KEY=your-stripe-secret-key
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
 
-# ImgBB (server-side only)
-IMGBB_API_KEY=
+# ImgBB
+IMGBB_API_KEY=your-imgbb-api-key
+
+**5. Start the development server**
 ```
 
 Seed demo data (admin + demo vendor/customer + 24 approved items):
@@ -164,3 +173,5 @@ The client's `getToken()` requests a short-lived JWT from Better Auth (`/api/aut
 - Tailwind CSS — https://tailwindcss.com
 - ImgBB — https://imgbb.com
 - Motion (framer-motion) — https://motion.dev
+
+

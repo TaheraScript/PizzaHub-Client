@@ -78,13 +78,6 @@ export function MenuFilters({ categories, locations }: MenuFiltersProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-          const data = Object.fromEntries(formData.entries())
-          console.log(data)
-          const search = data.searchField
-          const params = new URLSearchParams(window.location.search)
-          params.set('search',search as string)
-          router.push(`/browse-menu?${params.toString()}`)
     applySearch(searchRef.current?.value ?? "")
   }
 

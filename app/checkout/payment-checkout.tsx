@@ -96,13 +96,6 @@ export function PaymentCheckout({ user }: PaymentCheckoutProps) {
     toast.info("Promotion codes are coming soon")
   }
 
-  const handleContinue = () => {
-    // TODO: create the Stripe Checkout Session on the server and redirect to it.
-    // Never activate Premium from the success redirect — webhook only
-    // (docs/REQUIREMENTS.md §10).
-    toast.info("Stripe Checkout is coming soon")
-  }
-
   const displayName = user.name ?? user.email
   const initial = displayName.charAt(0).toUpperCase()
 
@@ -286,17 +279,13 @@ export function PaymentCheckout({ user }: PaymentCheckoutProps) {
               Back to account
             </Button>
             <form action="/api/checkout_sessions" method="POST">
-      <section>
-        <button type="submit" role="link"
-          
-              className="bg-brand-orange font-semibold text-white hover:bg-brand-orange/90"
-              onClick={handleContinue}
-            >
-              Continue to payment
-           
-        </button>
-      </section>
-    </form>
+              <Button
+                type="submit"
+                className="bg-brand-orange font-semibold text-white hover:bg-brand-orange/90"
+              >
+                Continue to payment
+              </Button>
+            </form>
           </div>
         </div>
 

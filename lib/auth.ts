@@ -1,8 +1,26 @@
 import { betterAuth } from "better-auth"
+import { createAuthMiddleware, APIError } from "better-auth/api"
 import { mongodbAdapter } from "@better-auth/mongo-adapter"
 import { jwt } from "better-auth/plugins"
 
 import { mongoClient } from "./db"
+
+/**
+ * §5: minimum 6 characters, at least one uppercase and one lowercase letter.
+ * Enforced on the server so the rule can't be bypassed by calling the auth API
+ * directly (the sign-up form also checks it for immediate feedback).
+ */
+function assertStrongPassword(password: unknown) {
+  if (typeof password !== "string") return
+  const weak =
+    password.length < 6 || !/[A-Z]/.test(password) || !/[a-z]/.test(password)
+  if (weak) {
+    throw new APIError("BAD_REQUEST", {
+      message:
+        "Password must be at least 6 characters and include an uppercase and a lowercase letter.",
+    })
+  }
+}
 
 const db = mongoClient.db(process.env.MONGODB_DB_NAME ?? "pizzahub")
 
@@ -66,6 +84,15 @@ export const auth = betterAuth({
       },
     }),
   ],
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email") {
+        assertStrongPassword(
+          (ctx.body as { password?: unknown } | undefined)?.password
+        )
+      }
+    }),
+  },
   databaseHooks: {
     user: {
       create: {
@@ -74,6 +101,17 @@ export const auth = betterAuth({
         before: async (user) => {
           const role = user.role === "vendor" ? "vendor" : "customer"
           return { data: { ...user, role } }
+        },
+      },
+      update: {
+        // Role and subscription are server-managed — never accept them from a
+        // profile update, so a user can't promote themselves (§11/§12).
+        before: async (user) => {
+          delete user.role
+          delete user.isBlocked
+          delete user.subscriptionPlan
+          delete user.subscriptionExpiresAt
+          return { data: user }
         },
       },
     },

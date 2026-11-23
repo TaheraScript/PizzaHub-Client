@@ -27,6 +27,8 @@ export type AdminUser = {
 export type Transaction = {
   _id: string
   vendorId?: string
+  vendorName?: string | null
+  vendorEmail?: string | null
   plan?: string
   amount?: number
   currency?: string

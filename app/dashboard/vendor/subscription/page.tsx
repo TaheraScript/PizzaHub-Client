@@ -23,7 +23,7 @@ const PLANS = [
   },
   {
     name: "Premium",
-    price: "$19",
+    price: "$20",
     period: "per month",
     highlight: true,
     features: [

@@ -41,6 +41,26 @@ const ROLE_LABEL: Record<Role, string> = {
   admin: "Admin",
 }
 
+/** Role-relevant links shown in the navbar once the user is signed in. */
+const ROLE_LINKS: Record<Role, { href: string; label: string }[]> = {
+  customer: [
+    { href: "/dashboard/customer", label: "Dashboard" },
+    { href: "/dashboard/customer/orders", label: "My Orders" },
+  ],
+  vendor: [
+    { href: "/dashboard/vendor", label: "Dashboard" },
+    { href: "/dashboard/vendor/menu-items", label: "My Menu Items" },
+    { href: "/dashboard/vendor/orders", label: "Customer Orders" },
+    { href: "/dashboard/vendor/subscription", label: "Subscription" },
+  ],
+  admin: [
+    { href: "/dashboard/admin", label: "Dashboard" },
+    { href: "/dashboard/admin/users", label: "Manage Users" },
+    { href: "/dashboard/admin/menu-items", label: "Menu Items" },
+    { href: "/dashboard/admin/transactions", label: "Transactions" },
+  ],
+}
+
 type SessionUser = {
   name?: string | null
   email?: string | null
@@ -55,7 +75,10 @@ function initials(name?: string | null) {
 }
 
 function isActive(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
+  if (href === "/") return pathname === "/"
+  // Role dashboard roots are exact matches so they don't stay active on subpages.
+  if (/^\/dashboard\/[^/]+$/.test(href)) return pathname === href
+  return pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function navLinkClass(active: boolean) {
@@ -81,11 +104,12 @@ export function Navbar() {
   const role: Role =
     user?.role === "vendor" || user?.role === "admin" ? user.role : "customer"
 
-  const LINKS = [
+  const BASE_LINKS = [
     { href: "/", label: "Home" },
     { href: "/browse-menu", label: "Browse Menu" },
-    ...(isLoggedIn ? [{ href: `/dashboard/${role}`, label: "Dashboard" }] : []),
   ]
+  const roleLinks = isLoggedIn ? ROLE_LINKS[role] : []
+  const mobileLinks = [...BASE_LINKS, ...roleLinks]
 
   const handleSignOut = async () => {
     await signOut()
@@ -101,12 +125,25 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label="Main">
-          {LINKS.map((link) => (
+          {BASE_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={isActive(pathname, link.href) ? "page" : undefined}
               className={navLinkClass(isActive(pathname, link.href))}
+            >
+              {link.label}
+            </Link>
+          ))}
+          {roleLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(pathname, link.href) ? "page" : undefined}
+              className={cn(
+                navLinkClass(isActive(pathname, link.href)),
+                "hidden lg:inline-block"
+              )}
             >
               {link.label}
             </Link>
@@ -224,7 +261,7 @@ export function Navbar() {
               </SheetHeader>
 
               <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3" aria-label="Mobile">
-                {LINKS.map((link) => (
+                {mobileLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}

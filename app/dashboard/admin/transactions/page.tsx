@@ -59,8 +59,13 @@ export default async function AdminTransactionsPage() {
             <tbody className="divide-y divide-border">
               {transactions.map((transaction) => (
                 <tr key={transaction._id}>
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                    {transaction.vendorId ?? "—"}
+                  <td className="px-4 py-3">
+                    <span className="block font-medium text-foreground">
+                      {transaction.vendorName ?? "Vendor"}
+                    </span>
+                    <span className="block text-xs text-muted-foreground">
+                      {transaction.vendorEmail ?? transaction.vendorId ?? "—"}
+                    </span>
                   </td>
                   <td className="px-4 py-3 capitalize">
                     {transaction.plan ?? "premium"}
