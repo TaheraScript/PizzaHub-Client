@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Loader2, MapPin, Search, X } from "lucide-react"
+import { ChevronDown, Loader2, MapPin, Search, X } from "lucide-react"
 
 import { CategoryTiles } from "@/components/menu/category-tiles"
 import { Button } from "@/components/ui/button"
@@ -132,20 +132,26 @@ export function MenuFilters({ categories, locations }: MenuFiltersProps) {
         </form>
 
         <div className="flex items-center gap-2">
-          <Select
-            value={currentSort}
-            onChange={(event) =>
-              updateParams({ sort: event.target.value || null })
-            }
-            aria-label="Sort menu items"
-            className="w-full cursor-pointer rounded-full bg-card px-4 text-sm font-semibold text-foreground sm:w-auto"
-          >
-            {MENU_SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
+          <div className="relative w-full sm:w-auto">
+            <Select
+              value={currentSort}
+              onChange={(event) =>
+                updateParams({ sort: event.target.value || null })
+              }
+              aria-label="Sort menu items"
+              className="w-full cursor-pointer appearance-none rounded-full bg-card pr-10 pl-4 text-sm font-semibold text-foreground"
+            >
+              {MENU_SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            <ChevronDown
+              aria-hidden="true"
+              className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-muted-foreground"
+            />
+          </div>
 
           {hasFilters ? (
             <Button
