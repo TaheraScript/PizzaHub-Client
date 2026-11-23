@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 import { auth } from "@/lib/auth"
 
 const PREMIUM_PRICE_ID =
@@ -34,7 +34,7 @@ export async function POST() {
     "http://localhost:3000"
 
   try {
-    const checkout = await stripe.checkout.sessions.create({
+    const checkout = await getStripe().checkout.sessions.create({
       mode: "payment",
       customer_email: session.user.email,
       metadata: { vendorId: session.user.id },

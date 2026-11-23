@@ -16,5 +16,7 @@ export type MenuItem = {
   status: MenuItemStatus
   vendorId?: string
   vendorName?: string
+  /** Owning vendor is on the Premium plan (featured placement + badge). */
+  vendorPremium?: boolean
   createdAt?: string
 }

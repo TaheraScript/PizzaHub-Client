@@ -419,7 +419,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Better Auth configured (email/password + Google) — MongoDB adapter, role + `isBlocked`/`subscriptionPlan`/`subscriptionExpiresAt` fields, `minPasswordLength: 6`; secrets via env
 - [x] Sign Up page (role select, validation, image upload)
 - [x] Sign In page
-- [ ] Admin role assignment (secure, no public admin signup)
+- [x] Admin role assignment (secure, no public admin signup) — seed promotes role in DB; auth `create` hook coerces any forged role to `customer`
 - [x] Session/role middleware on client — server-side `requireSession`/`requireRole` in dashboard layouts (unauth → Sign In, wrong role / blocked → unauthorized)
 - [x] JWT middleware + role middleware on server — `requireAuth` (jose HS256 verify, 401 on invalid/expired) + `requireRole(...)` (403), reloads user for fresh role/blocked
 - [x] Route protection for dashboards (client + server) — Next `proxy.ts` (cookie pre-check) + server-side `requireSession`/`requireRole`
@@ -435,12 +435,12 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started
 - [x] Home: Motion animations (framer-motion, reduced-motion aware)
 - [x] Browse Menu (search, category + location filter, loading/empty)
 - [x] Item Details `/menu/[id]` (multi-image, error states) — gallery + Order option; legacy `/browse-menu/[id]` redirects here
-- [ ] Custom 404 page
+- [x] Custom 404 page (`app/not-found.tsx`) + `app/error.tsx` boundary
 
 ### Vendor
 - [x] Dashboard layout (sidebar, role-based nav)
 - [x] Overview (stats + charts)
-- [ ] Add Menu Item (ImgBB upload, pending default, 3-item limit)
+- [x] Add Menu Item (ImgBB upload via `/api/upload`, pending default, server-enforced 3-item limit)
 - [x] My Menu Items (list, update, delete, availability)
 - [x] Customer Orders (accept/reject once, ownership checks)
 - [x] Subscription (plans, Upgrade button)

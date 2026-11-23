@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, MapPin, Store } from "lucide-react"
+import { ArrowRight, MapPin, Sparkles, Store } from "lucide-react"
 
 import { MenuImage } from "@/components/menu/menu-image"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,12 @@ export function MenuCard({ item }: { item: MenuItem }) {
 
       <div className="relative aspect-4/3 overflow-hidden bg-muted">
         <MenuImage src={item.image} alt={item.itemName} />
+        {item.vendorPremium ? (
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-brand-amber/90 px-2.5 py-1 text-[11px] font-bold text-brand-brown shadow-sm">
+            <Sparkles className="size-3" />
+            Premium
+          </span>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-4">

@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { requireSession } from '@/lib/core/server'
 import { Button } from '@/components/ui/button'
 import { cardClass } from '@/components/ui/card'
@@ -67,7 +67,7 @@ export default async function CheckoutSuccessPage({
   if (typeof session_id !== 'string')
     throw new Error('Invalid session_id')
 
-  const session = await stripe.checkout.sessions.retrieve(session_id, {
+  const session = await getStripe().checkout.sessions.retrieve(session_id, {
     expand: ['line_items', 'payment_intent'],
   })
 

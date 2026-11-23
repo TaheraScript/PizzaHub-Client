@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { ObjectId } from "mongodb"
 
 import { getDb } from "@/lib/mongo"
-import { stripe } from "@/lib/stripe"
+import { getStripe } from "@/lib/stripe"
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET
 const PREMIUM_DAYS = 30
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
   let event
   try {
-    event = stripe.webhooks.constructEvent(rawBody, signature, WEBHOOK_SECRET)
+    event = getStripe().webhooks.constructEvent(rawBody, signature, WEBHOOK_SECRET)
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
   }
