@@ -21,12 +21,17 @@ export function ProfileForm({
   name,
   email,
   image,
+  role,
+  businessName,
 }: {
   name: string
   email: string
   image: string | null
+  role: string
+  businessName: string
 }) {
   const [formName, setFormName] = useState(name)
+  const [formBusinessName, setFormBusinessName] = useState(businessName)
   const [imageUrl, setImageUrl] = useState<string | null>(image)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -57,10 +62,12 @@ export function ProfileForm({
     event.preventDefault()
     setSaving(true)
     try {
-      // Only name + image are sent — role/subscription are server-managed (§11).
+      // Only name + image (+ restaurant name for vendors) are sent —
+      // role/subscription are server-managed (§11).
       const { error } = await authClient.updateUser({
         name: formName.trim(),
         image: imageUrl ?? undefined,
+        ...(role === "vendor" ? { businessName: formBusinessName.trim() } : {}),
       })
       if (error) {
         throw new Error(error.message ?? "Could not update profile")
@@ -110,6 +117,22 @@ export function ProfileForm({
           required
         />
       </div>
+
+      {role === "vendor" ? (
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="businessName">Restaurant name</Label>
+          <Input
+            id="businessName"
+            value={formBusinessName}
+            onChange={(event) => setFormBusinessName(event.target.value)}
+            placeholder="e.g. Slice House"
+            disabled={saving}
+          />
+          <p className="text-xs text-muted-foreground">
+            Shown on your menu items as the vendor name.
+          </p>
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">Email</Label>

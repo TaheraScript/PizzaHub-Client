@@ -17,13 +17,19 @@ export default async function ProfilePage() {
     <PageContainer className="max-w-2xl">
       <PageHeader
         title="Profile settings"
-        description="Update your name and profile photo."
+        description={
+          session.user.role === "vendor"
+            ? "Manage your restaurant name, contact name and photo."
+            : "Update your name and profile photo."
+        }
       />
       <div className="mt-6">
         <ProfileForm
           name={session.user.name ?? ""}
           email={session.user.email ?? ""}
           image={typeof session.user.image === "string" ? session.user.image : null}
+          role={session.user.role ?? "customer"}
+          businessName={session.user.businessName ?? ""}
         />
       </div>
     </PageContainer>

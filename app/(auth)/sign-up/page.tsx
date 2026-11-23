@@ -26,6 +26,7 @@ type SignUpForm = {
   confirmPassword: string
   image: File | null
   role: Role
+  businessName: string
 }
 
 const ROLES: { value: Role; label: string; description: string }[] = [
@@ -81,6 +82,7 @@ export default function SignUpPage() {
     confirmPassword: "",
     image: null,
     role: "customer",
+    businessName: "",
   })
   const [agreed, setAgreed] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -143,6 +145,10 @@ export default function SignUpPage() {
       toast.error(passwordError)
       return
     }
+    if (data.role === "vendor" && !data.businessName.trim()) {
+      toast.error("Please add your restaurant name.")
+      return
+    }
     if (uploadingImage) {
       toast.info("Hang on — your profile image is still uploading.")
       return
@@ -155,6 +161,8 @@ export default function SignUpPage() {
         email: data.email,
         password: data.password,
         role: data.role,
+        businessName:
+          data.role === "vendor" ? data.businessName.trim() : undefined,
         image: imageUrl ?? undefined,
         callbackURL: "/",
       })
@@ -368,6 +376,31 @@ export default function SignUpPage() {
                 })}
               </div>
             </div>
+
+            {form.role === "vendor" ? (
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="businessName"
+                  className="text-xs text-muted-foreground"
+                >
+                  Restaurant name
+                </Label>
+                <Input
+                  id="businessName"
+                  name="businessName"
+                  placeholder="e.g. Slice House"
+                  value={form.businessName}
+                  onChange={(event) =>
+                    updateField("businessName", event.target.value)
+                  }
+                  disabled={submitting}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Shown on your menu items as the vendor name.
+                </p>
+              </div>
+            ) : null}
 
             <label className="flex items-start gap-2.5 text-xs text-muted-foreground">
               <input
