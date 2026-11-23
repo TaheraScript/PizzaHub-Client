@@ -26,10 +26,6 @@ function createStore() {
   const client = new MongoClient(uri, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 10_000,
-    // Bound the Mongo adapter's transaction retries (default is 120s) so a
-    // single request can't outlive the serverless function timeout — which
-    // would leave a half-closed topology behind.
-    timeoutMS: 15_000,
   })
 
   return { client, db: client.connect().then((c) => c.db(dbName)) }
